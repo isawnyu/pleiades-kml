@@ -12,4 +12,4 @@ class PlaceDocument(Document):
 
     @property
     def features(self):
-        return iter([Folder(self.context, self.request)])
+        return iter([PlaceFolder(self.context, self.request)])
