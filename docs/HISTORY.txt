@@ -1,0 +1,9 @@
+Changelog for pleiades.kml
+
+    (name of developer listed in brackets)
+
+pleiades.kml - 0.1 Unreleased
+
+    - Initial package structure.
+      [zopeskel]
+

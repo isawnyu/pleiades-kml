@@ -1,0 +1,40 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="pleiades.kml">
+
+  <include package="zgeo.plone.kml"/>
+
+  <five:implements
+    class="Products.PleiadesEntity.content.Feature.Feature"
+    interface="zope.dublincore.interfaces.ICMFDublinCore"
+    />
+
+  <five:implements
+    class="Products.PleiadesEntity.content.Place.Place"
+    interface="zope.dublincore.interfaces.ICMFDublinCore"
+    />
+
+  <adapter
+    factory="zgeo.kml.browser.Placemark"
+    for="Products.PleiadesEntity.content.interfaces.IFeature
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    provides="zgeo.kml.interfaces.IFeature"
+    />
+
+  <adapter
+    factory=".browser.PlaceFolder"
+    for="Products.PleiadesEntity.content.interfaces.IPlace
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    provides="zgeo.kml.interfaces.IFeature"
+    />
+
+  <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="kml-document"
+    class=".browser.PlaceDocument"
+    permission="zope2.View"
+    />
+
+</configure>
