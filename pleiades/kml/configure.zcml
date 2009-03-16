@@ -32,7 +32,7 @@
 
   <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"
-    name="kml-document"
+    name="kml"
     class=".browser.PlaceDocument"
     permission="zope2.View"
     />

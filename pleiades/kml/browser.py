@@ -4,7 +4,7 @@ class PlaceFolder(Folder):
     
     @property
     def features(self):
-        for item in self.context.getRefs('hasFeature'):
+        for item in self.context.getFeatures():
             yield Placemark(item, self.request)
 
 
