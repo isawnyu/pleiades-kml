@@ -6,10 +6,12 @@ from Testing import ZopeTestCase as ztc
 from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import onsetup
 
+from pleiades.workspace.tests.base import ContentFunctionalTestCase
+
 ztc.installProduct('ATVocabularyManager')
+ztc.installProduct('Products.CompoundField')
+ztc.installProduct('Products.ATBackRef')
 ztc.installProduct('PleiadesEntity')
-ztc.installProduct('zgeo.plone.geographer')
-ztc.installProduct('zgeo.plone.kml')
 
 @onsetup
 def setup_pleiades_kml():
@@ -31,6 +33,8 @@ def setup_pleiades_kml():
     # the ZCML.
 
     ztc.installPackage('pleiades.workspace')
+    ztc.installProduct('zgeo.plone.geographer')
+    ztc.installProduct('zgeo.plone.kml')
     ztc.installPackage('pleiades.kml')
     
 # The order here is important: We first call the (deferred) function which
@@ -40,11 +44,13 @@ def setup_pleiades_kml():
 setup_pleiades_kml()
 ptc.setupPloneSite(
     products=[
-    'ATVocabularyManager', 
+    'ATVocabularyManager',
+    'Products.CompoundField',
+    'Products.ATBackRef',
     'PleiadesEntity',
     'pleiades.workspace',
-    'zgeo.plone.geographer', 
-    'zgeo.plone.geographer'
+    'zgeo.plone.geographer',
+    'pleiades.kml'
     ])
 
 class PleiadesKMLTestCase(ptc.PloneTestCase):
@@ -52,81 +58,20 @@ class PleiadesKMLTestCase(ptc.PloneTestCase):
     we can put common utility or setup code in here.
     """
 
-class PleiadesKMLFunctionalTestCase(ptc.FunctionalTestCase):
+class PleiadesKMLFunctionalTestCase(ContentFunctionalTestCase):
     """We use this base class for all the tests in this package. If necessary,
     we can put common utility or setup code in here.
     """
 
     def afterSetUp(test):
-        test.setRoles(('Manager',))
-        pt = test.portal.portal_types
-        for type in [
-            'Topic', 
-            'PlaceContainer', 
-            'FeatureContainer',
-            'LocationContainer',
-            'NameContainer',
-            'Workspace Folder',
-            'Workspace',
-            'Workspace Collection',
-            'Place',
-            'Feature',
-            'Location',
-            'Name'
-            ]:
-            lpf = pt[type]
-            lpf.global_allow = True
-
-        _ = test.portal.invokeFactory(
-            'PlaceContainer', id='places', title='Places', 
-            description='All Places'
-            )
-        _ = test.portal.invokeFactory(
-            'FeatureContainer', id='features', title='Features'
-            )
-        _ = test.portal.invokeFactory(
-            'LocationContainer', id='locations', title='Locations'
-            )
-        _ = test.portal.invokeFactory(
-            'NameContainer', id='names', title='Names'
-            )
-        _ = test.portal.invokeFactory(
-            'Workspace Folder', id='workspaces', title='Workspaces'
-            )
-
-        test.names = test.portal['names']
-        test.locations = test.portal['locations']
-        test.features = test.portal['features']
-        test.places = test.portal['places']
-        test.workspaces = test.portal['workspaces']
-
-        nid = test.names.invokeFactory('Name', nameTransliterated='Foo')
-        name = test.names[nid]
-        name.reindexObject()
-
-        lid = test.locations.invokeFactory(
-            'Location', geometry='Point:[0.0, 0.0]')
-        location = test.locations[lid]
-        location.reindexObject()
-
-        fid = test.features.invokeFactory('Feature', description='A Feature')
-        feature = test.features[fid]
-        feature.addReference(name, 'hasName')
-        feature.addReference(location, 'hasLocation')
-        feature.reindexObject()
-
-        pid = test.places.invokeFactory('Place', id='a', description='A Place')
-        place = test.places[pid]
-        place.addReference(feature, 'hasFeature')
-        place.reindexObject()
+        ContentFunctionalTestCase.afterSetUp(test)
 
         cid = test.portal.invokeFactory('Topic', id='places-topic')
         test.topic = test.portal[cid] 
-        c = test.topic.addCriterion('Type', 'ATPortalTypeCriterion')
+        c = test.topic.addCriterion('portal_type', 'ATPortalTypeCriterion')
         c.setValue('Place')
 
         cid = test.portal.invokeFactory('Topic', id='features-topic')
         test.topic = test.portal[cid] 
-        c = test.topic.addCriterion('Type', 'ATPortalTypeCriterion')
+        c = test.topic.addCriterion('portal_type', 'ATPortalTypeCriterion')
         c.setValue('Feature')
-

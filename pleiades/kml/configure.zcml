@@ -37,4 +37,18 @@
     permission="zope2.View"
     />
 
+  <browser:page
+    for="pleiades.workspace.interfaces.IWorkspaceCollection"
+    name="kml"
+    class="zgeo.plone.kml.browser.TopicDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlaceContainer"
+    name="kml"
+    class="zgeo.kml.browser.Document"
+    permission="zope2.View"
+    />
+
 </configure>

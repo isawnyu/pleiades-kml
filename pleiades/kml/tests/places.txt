@@ -3,7 +3,7 @@ Test serialization of PlaceContainer to KML
 
     >>> from Products.PloneTestCase.setup import portal_owner, default_password
     >>> r = http(r"""
-    ... GET /plone/places/@@kml-document HTTP/1.1
+    ... GET /plone/places/@@kml HTTP/1.1
     ... Authorization: Basic %s:%s
     ... """ % (portal_owner, default_password), handle_errors=False)
     >>> r.getStatus()
@@ -29,23 +29,23 @@ Test serialization of PlaceContainer to KML
         <open>0</open>
     <BLANKLINE>
         <Folder>
-          <name>Foo</name>
-          <description>A Place</description>
+          <name>Ninoe</name>
+          <description></description>
           <Placemark>
-            <name>Foo</name>
+            <name>Ninoe</name>
             <description>
             <![CDATA[
               <div>
-                <p>A Feature</p>
+                <p></p>
                 <p>URL: 
-                <a href="http://localhost/plone/features/...">http://localhost/plone/features/...</a>
+                  <a href="http://localhost/plone/features/1">http://localhost/plone/features/1</a>
                 </p>
               </div>
             ]]>
             </description>
             <styleUrl>#defaultStyle</styleUrl>
             <Point>
-              <coordinates>0.000000,0.000000,0.0</coordinates>
+              <coordinates>-86.480833,34.769722,0.0</coordinates>
             </Point>
     <BLANKLINE>
     <BLANKLINE>
