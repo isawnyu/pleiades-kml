@@ -2,6 +2,10 @@ Changelog for pleiades.kml
 
     (name of developer listed in brackets)
 
+0.2
+
+    - Improvements to test_suite and compatibility with new Pleiades content model.
+    
 pleiades.kml - 0.1 Unreleased
 
     - Initial package structure.
