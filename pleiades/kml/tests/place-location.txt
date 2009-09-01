@@ -1,9 +1,9 @@
-Test serialization of PlaceContainer to KML
-===========================================
+Test serialization of a located Place to KML
+============================================
 
     >>> from Products.PloneTestCase.setup import portal_owner, default_password
     >>> r = http(r"""
-    ... GET /plone/places/@@kml HTTP/1.1
+    ... GET /plone/places/2/@@kml HTTP/1.1
     ... Authorization: Basic %s:%s
     ... """ % (portal_owner, default_password), handle_errors=False)
     >>> r.getStatus()
@@ -24,7 +24,7 @@ Test serialization of PlaceContainer to KML
             <color>33ff0000</color>
           </PolyStyle>
         </Style>
-        <name>Places</name>
+        <name>Ninoe</name>
         <visibility>1</visibility>
         <open>0</open>
     <BLANKLINE>
@@ -38,36 +38,10 @@ Test serialization of PlaceContainer to KML
               <div>
                 <p></p>
                 <p>URL: 
-                  <a href="http://localhost/plone/features/1">http://localhost/plone/features/1</a>
-                </p>
-              </div>
-            ]]>
-            </description>
-            <styleUrl>#defaultStyle</styleUrl>
-            <Point>
-              <coordinates>-86.480833,34.769722,0.0</coordinates>
-            </Point>
-    <BLANKLINE>
-    <BLANKLINE>
-          </Placemark>
-        </Folder>
-    <BLANKLINE>
-    <BLANKLINE>
-    <BLANKLINE>
-        <Folder>
-          <name>Ninoe</name>
-          <description></description>
-          <Placemark>
-            <name>Ninoe</name>
-            <description>
-            <![CDATA[
-              <div>
-                <p></p>
-                <p>URL:
                   <a href="http://localhost/plone/places/2">http://localhost/plone/places/2</a>
                 </p>
               </div>
-              ]]>
+            ]]>
             </description>
             <styleUrl>#defaultStyle</styleUrl>
             <Point>
