@@ -73,7 +73,9 @@ class PleiadesKMLFunctionalTestCase(ContentFunctionalTestCase):
         attestations.resize(1)
         p[nid].update(attestations=[dict(confidence='certain', timePeriod='roman')])
         lid = p.invokeFactory('Location', 'position', title='Point 1', geometry='Point:[-86.4808333333333, 34.769722222222]')
-        
+
+        pid = self.places.invokeFactory('Place', '3', title='Ninoe', location='http://atlantides.org/capgrids/35/E2')
+                
         cid = self.portal.invokeFactory('Topic', id='places-topic')
         self.topic = self.portal[cid] 
         c = self.topic.addCriterion('portal_type', 'ATPortalTypeCriterion')

@@ -53,6 +53,11 @@ def test_suite():
             ),
 
         ztc.FunctionalDocFileSuite(
+            'place-gridsquare.txt', package='pleiades.kml.tests',
+            test_class=PleiadesKMLFunctionalTestCase
+            ),
+            
+        ztc.FunctionalDocFileSuite(
             'place-location.txt', package='pleiades.kml.tests',
             test_class=PleiadesKMLFunctionalTestCase
             ),
