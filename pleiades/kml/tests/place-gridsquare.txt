@@ -32,6 +32,23 @@ Test serialization of an unlocated Place to KML
           <name>Ninoe</name>
           <description></description>
           <Placemark>
+            <name>Ninoe</name>
+            <description>
+            <![CDATA[
+              <div>
+               <p></p>
+               <p>URL:
+                 <a href="http://localhost/plone/places/3">http://localhost/plone/places/3</a>
+               </p>
+             </div>
+           ]]>
+           </description>
+           <styleUrl>#defaultStyle</styleUrl>
+    <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+          </Placemark>
+          <Placemark>
             <name>Barrington Atlas map 35, grid square E2</name>
             <description>
             <![CDATA[
