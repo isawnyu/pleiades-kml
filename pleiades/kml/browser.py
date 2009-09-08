@@ -26,15 +26,8 @@ class PlaceFolder(Folder):
     @property
     def features(self):
         x = list(self.context.getLocations())
-#        dc_coverage = self.context.getLocation()
         if len(x) > 0:
             yield Placemark(x[0], self.request)
-        # if len(x) == 0 or not x[0].getGeometry():
-        #     if dc_coverage.startswith('http://atlantides.org/capgrids'):
-        #         s = dc_coverage.rstrip('/')
-        #         mapid, gridsquare = s.split('/')[-2:]
-        #         grid = Grid(mapid, gridsquare)
-        #         yield GridPlacemark(grid, self.request)
         for item in self.context.getFeatures():
             yield Placemark(item, self.request)
 
