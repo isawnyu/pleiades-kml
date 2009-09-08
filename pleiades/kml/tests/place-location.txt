@@ -32,13 +32,13 @@ Test serialization of a located Place to KML
           <name>Ninoe</name>
           <description></description>
           <Placemark>
-            <name>Ninoe</name>
+            <name>Point 1</name>
             <description>
             <![CDATA[
               <div>
                 <p></p>
                 <p>URL: 
-                  <a href="http://localhost/plone/places/2">http://localhost/plone/places/2</a>
+                  <a href="http://localhost/plone/places/2/position">http://localhost/plone/places/2/position</a>
                 </p>
               </div>
             ]]>
