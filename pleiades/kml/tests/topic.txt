@@ -1,0 +1,136 @@
+Test serialization of Topic to KML
+===========================================
+
+    >>> from Products.PloneTestCase.setup import portal_owner, default_password
+    >>> r = http(r"""
+    ... GET /plone/places-topic/@@kml HTTP/1.1
+    ... Authorization: Basic %s:%s
+    ... """ % (portal_owner, default_password), handle_errors=False)
+    >>> r.getStatus()
+    200
+    >>> r.getHeader('Content-Type')
+    'application/vnd.google-earth.kml+xml;charset=utf-8'
+    >>> print r.getBody()
+    <?xml version="1.0" encoding="utf-8"?>
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+    <BLANKLINE>
+      <Document>
+    <BLANKLINE>
+        <Style id="defaultStyle">
+          <LineStyle>
+            <color>ffff0000</color>
+            <width>2</width>
+          </LineStyle>
+          <PolyStyle>
+            <color>33ff0000</color>
+          </PolyStyle>
+          <BalloonStyle>
+            <text><![CDATA[
+              <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">
+              <div style="padding-top:1.5em"><h1>$[name]</h1></div>
+              $[description]
+              <div style="font-size:smaller">Copyright © Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>
+              </div>
+            ]]></text>
+          </BalloonStyle>
+        </Style>
+    <BLANKLINE>
+        <name></name>
+        <visibility>1</visibility>
+        <open>0</open>
+    <BLANKLINE>
+    <BLANKLINE>
+        <Placemark>
+          <name>Ninoe</name>
+          <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a href="http://localhost/plone/places/1">http://localhost/plone/places/1</a>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+          </description>
+          <styleUrl>#defaultStyle</styleUrl>
+          <Point>
+            <coordinates>-86.480833,34.769722,0.0</coordinates>
+          </Point>
+    <BLANKLINE>
+    <BLANKLINE>
+        </Placemark>
+    <BLANKLINE>
+    <BLANKLINE>
+        <Placemark>
+          <name>Ninoe</name>
+          <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a href="http://localhost/plone/places/2">http://localhost/plone/places/2</a>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+          </description>
+          <styleUrl>#defaultStyle</styleUrl>
+          <Point>
+            <coordinates>-86.480833,34.769722,0.0</coordinates>
+          </Point>
+    <BLANKLINE>
+    <BLANKLINE>
+        </Placemark>
+    <BLANKLINE>
+    <BLANKLINE>
+        <Placemark>
+          <name>Ninoe</name>
+          <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a href="http://localhost/plone/places/3">http://localhost/plone/places/3</a>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+          </description>
+          <styleUrl>#defaultStyle</styleUrl>
+    <BLANKLINE>
+    <BLANKLINE>
+          <Polygon>
+            <outerBoundaryIs>
+              <LinearRing>
+                <coordinates>12.000000,32.000000,0.0 12.000000,33.000000,0.0 13.000000,33.000000,0.0 13.000000,32.000000,0.0 12.000000,32.000000,0.0</coordinates>
+              </LinearRing>
+            </outerBoundaryIs>
+          </Polygon>
+        </Placemark>
+    <BLANKLINE>
+    <BLANKLINE>
+        <Placemark>
+          <name>Four</name>
+          <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a href="http://localhost/plone/places/4">http://localhost/plone/places/4</a>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+          </description>
+          <styleUrl>#defaultStyle</styleUrl>
+          <Point>
+            <coordinates>-86.000000,34.000000,0.0</coordinates>
+          </Point>
+    <BLANKLINE>
+    <BLANKLINE>
+        </Placemark>
+    <BLANKLINE>
+      </Document>
+    </kml>
+    <BLANKLINE>
