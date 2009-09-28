@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml
+  xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  >
+  <tal:b 
+    condition="python:request and request.response.setHeader(
+		'Content-Type', 'application/vnd.google-earth.kml+xml;charset=utf-8')" 
+    />
+  <Document>
+    
+    <Style id="defaultStyle">
+      <LineStyle>
+        <color>ffff0000</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>33ff0000</color>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><span tal:replace="structure string:&lt;![CDATA[" />
+          <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">
+          <div style="padding-top:1.5em"><h1>$[name]</h1></div>
+          $[description]
+          <div style="font-size:smaller">Copyright © Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>
+          </div>
+        <span tal:replace="structure string:]]&gt;"/></text>
+      </BalloonStyle>
+    </Style>
+    
+    <name tal:content="view/name">TITLE</name>
+    <visibility>1</visibility>
+    <open>0</open>
+    <tal:features tal:repeat="feature view/features">
+    <Folder tal:condition="exists:feature/features">
+      <name tal:content="feature/name">TITLE</name>
+      <description tal:content="feature/description">DESCRIPTION</description>
+      <Placemark tal:repeat="placemark feature/features">
+        <name tal:content="placemark/name">TITLE</name>
+        <description>
+        <span tal:replace="structure string:&lt;![CDATA[" />
+          <div>
+            <p>URL: 
+              <a 
+                tal:attributes="href placemark/alternate_link" 
+                tal:content="placemark/alternate_link"
+                >ITEM URL
+              </a>
+            </p>
+            <p tal:content="placemark/description">ITEM DESCRIPTION</p>
+            <p>Attested: <span tal:content="placemark/timePeriods">A, B</span></p>
+          </div>
+        <span tal:replace="structure string:]]&gt;" />
+        </description>
+        <styleUrl>#defaultStyle</styleUrl>
+        <Point tal:condition="placemark/hasPoint">
+          <coordinates tal:content="placemark/coords_kml">
+            COORDINATE LIST
+          </coordinates>
+        </Point>
+        <LineString tal:condition="placemark/hasLineString">
+          <coordinates tal:content="placemark/coords_kml">
+            COORDINATE LIST
+          </coordinates>
+        </LineString>
+        <Polygon tal:condition="placemark/hasPolygon">
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates tal:content="placemark/coords_kml">
+                COORDINATE LIST
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+    </Folder>
+    <Placemark tal:condition="not:exists:feature/features">
+      <name tal:content="feature/name">TITLE</name>
+      <description>
+        <span tal:replace="structure string:&lt;![CDATA[" />
+          <div>
+            <p>URL: 
+              <a 
+                tal:attributes="href placemark/alternate_link" 
+                tal:content="placemark/alternate_link"
+                >ITEM URL
+              </a>
+            </p>
+            <p tal:content="placemark/description">ITEM DESCRIPTION</p>
+            <p>Attested: <span tal:content="placemark/timePeriods">A, B</span></p>
+          </div>
+        <span tal:replace="structure string:]]&gt;" />
+      </description>
+      <styleUrl>#defaultStyle</styleUrl>
+      <Point tal:condition="feature/hasPoint">
+        <coordinates tal:content="feature/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </Point>
+      <LineString tal:condition="feature/hasLineString">
+        <coordinates tal:content="feature/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </LineString>
+      <Polygon tal:condition="feature/hasPolygon">
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates tal:content="feature/coords_kml">
+              COORDINATE LIST
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    </tal:features>
+  </Document>
+</kml>

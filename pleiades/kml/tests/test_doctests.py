@@ -61,7 +61,12 @@ def test_suite():
             'place-location.txt', package='pleiades.kml.tests',
             test_class=PleiadesKMLFunctionalTestCase
             ),
-
+            
+        ztc.FunctionalDocFileSuite(
+            'topic.txt', package='pleiades.kml.tests',
+            test_class=PleiadesKMLFunctionalTestCase
+            ),
+            
         #ztc.FunctionalDocFileSuite(
         #    'large-folder-kml.txt', package='zgeo.plone.kml.tests',
          #   test_class=PloneKMLFunctionalTestCase

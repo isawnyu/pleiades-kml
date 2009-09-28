@@ -7,6 +7,11 @@
   <include package="zgeo.plone.kml"/>
 
   <five:implements
+    class="Products.PleiadesEntity.content.Location.Location"
+    interface="zope.dublincore.interfaces.ICMFDublinCore"
+    />
+    
+  <five:implements
     class="Products.PleiadesEntity.content.Feature.Feature"
     interface="zope.dublincore.interfaces.ICMFDublinCore"
     />
@@ -40,14 +45,21 @@
   <browser:page
     for="pleiades.workspace.interfaces.IWorkspaceCollection"
     name="kml"
-    class="zgeo.plone.kml.browser.TopicDocument"
+    class=".browser.PleiadesTopicDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
+    for="Products.ATContentTypes.content.topic.ATTopic"
+    name="kml"
+    class=".browser.PleiadesTopicDocument"
     permission="zope2.View"
     />
 
   <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlaceContainer"
     name="kml"
-    class="zgeo.kml.browser.Document"
+    class=".browser.PleiadesDocument"
     permission="zope2.View"
     />
 

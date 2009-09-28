@@ -1,5 +1,17 @@
 from pleiades.capgrids import Grid
+
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+
 from zgeo.kml.browser import Document, Folder, Placemark
+from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
+
+from zope.component import adapts
+from zope.publisher.interfaces import browser
+from zope.contentprovider.interfaces import IContentProvider
+from zope.interface import implements, Interface
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.dublincore.interfaces import ICMFDublinCore
+from zgeo.kml.interfaces import IFeature, IPlacemark, IContainer
 
 
 class GridPlacemark(Placemark):
@@ -7,14 +19,32 @@ class GridPlacemark(Placemark):
     @property
     def id(self):
         return self.context.id
-        
+    
     @property
     def alternate_link(self):
         return self.context.id
 
 
-class PlaceFolder(Folder):
+class PleiadesPlacemark(Placemark):
+    
+    @property
+    def timePeriods(self):
+        return ', '.join([x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
 
+
+class PleiadesBrainPlacemark(BrainPlacemark):
+    
+    @property
+    def timePeriods(self):
+        return ', '.join([x.capitalize() for x in getattr(self.context, 'getTimePeriods', [])]) or 'None'
+
+    @property
+    def alternate_link(self):
+        return self.context.getURL() #
+            
+
+class PlaceFolder(Folder):
+    
     @property
     def description(self):
         s = self.context.Description()
@@ -22,18 +52,48 @@ class PlaceFolder(Folder):
         if modernLocation:
             s += ', modern location: %s'  % modernLocation
         return s
-        
+    
     @property
     def features(self):
-        x = list(self.context.getLocations())
-        if len(x) > 0:
-            yield Placemark(x[0], self.request)
+        for item in self.context.getLocations():
+            yield PleiadesPlacemark(item, self.request)
         for item in self.context.getFeatures():
-            yield Placemark(item, self.request)
+            yield PleiadesPlacemark(item, self.request)
 
 
 class PlaceDocument(Document):
-
+    implements(IContainer)
+    template = ViewPageTemplateFile('kml_document.pt')
+    
     @property
     def features(self):
         return iter([PlaceFolder(self.context, self.request)])
+
+
+class PleiadesDocument(Document):
+    template = ViewPageTemplateFile('kml_document.pt')
+
+
+class PleiadesTopicDocument(TopicDocument):
+    template = ViewPageTemplateFile('kml_topic_document.pt')
+
+    @property
+    def features(self):
+        for brain in self.context.queryCatalog():
+            yield PleiadesBrainPlacemark(brain, self.request)
+            
+
+class PleiadesStylesProvider(object):
+    implements(IContentProvider)
+    adapts(Interface, IDefaultBrowserLayer, PlaceDocument)
+    
+    template = ViewPageTemplateFile('kml_styles.pt')
+    
+    def __init__(self, context, request, view):
+        self.context, self.request, self.view = context, request, view
+    
+    def update(self):
+        pass
+    
+    def render(self):
+        return self.template().encode('utf-8')

@@ -77,7 +77,12 @@ class PleiadesKMLFunctionalTestCase(ContentFunctionalTestCase):
         pid = self.places.invokeFactory('Place', '3', title='Ninoe', )
         p = self.places[pid]
         lid = p.invokeFactory('Location', 'undetermined', title='Undetermined location', geometry=None, location='http://atlantides.org/capgrids/35/E2')
-                
+
+        pid = self.places.invokeFactory('Place', '4', title='Four', )
+        p = self.places[pid]
+        lid = p.invokeFactory('Location', 'x1', title='Point 1', geometry='Point:[-86.0, 34.0]')
+        lid = p.invokeFactory('Location', 'x2', title='Point 2', geometry='Point:[-87.0, 35.0]')
+        
         cid = self.portal.invokeFactory('Topic', id='places-topic')
         self.topic = self.portal[cid] 
         c = self.topic.addCriterion('portal_type', 'ATPortalTypeCriterion')

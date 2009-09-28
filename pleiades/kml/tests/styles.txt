@@ -1,0 +1,69 @@
+
+  >>> from zope.dublincore.interfaces import ICMFDublinCore
+  >>> from zope.interface import implements
+  >>> class Place(object):
+  ...     implements(ICMFDublinCore)
+  >>> place = Place()
+  >>> from pleiades.kml.browser import PlaceDocument, PleiadesStylesProvider
+  >>> from zope.publisher.browser import TestRequest
+  >>> request = TestRequest()
+  >>> view = PlaceDocument(place, request)
+  >>> provider = PleiadesStylesProvider(place, request, view)
+  >>> provider.render()
+  '<Style id="defaultStyle"\n  i18n:domain="pleiades.kml"\n  xmlns:tal="http://xml.zope.org/namespaces/tal"\n  >\n  <LineStyle>\n    <color>ffff0000</color>\n    <width>2</width>\n  </LineStyle>\n  <PolyStyle>\n    <color>33ff0000</color>\n  </PolyStyle>\n  <BalloonStyle>\n    <text><![CDATA[\n      <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">\n      <div style="padding-top:1.5em"><h1>$[name]</h1></div>\n      $[description]\n      <div style="font-size:smaller">Copyright \xc2\xa9 Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>\n      </div>\n    ]]/></text>\n  </BalloonStyle>\n</Style>'
+  >>> from zope.component import getMultiAdapter
+  >>> provider = getMultiAdapter((place, request, view), name='zgeo.kml.styles')
+  >>> provider.render()
+  '<Style id="defaultStyle"\n  i18n:domain="pleiades.kml"\n  xmlns:tal="http://xml.zope.org/namespaces/tal"\n  >\n  <LineStyle>\n    <color>ffff0000</color>\n    <width>2</width>\n  </LineStyle>\n  <PolyStyle>\n    <color>33ff0000</color>\n  </PolyStyle>\n  <BalloonStyle>\n    <text><![CDATA[\n      <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">\n      <div style="padding-top:1.5em"><h1>$[name]</h1></div>\n      $[description]\n      <div style="font-size:smaller">Copyright \xc2\xa9 Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>\n      </div>\n    ]]/></text>\n  </BalloonStyle>\n</Style>'
+    
+  Let's now create a view using a page template:
+
+  >>> import os, tempfile
+  >>> temp_dir = tempfile.mkdtemp()
+  >>> templateFileName = os.path.join(temp_dir, 'template.pt')
+  >>> open(templateFileName, 'w').write('''
+  ... <kml
+  ...   xmlns="http://www.opengis.net/kml/2.2"
+  ...   xmlns:tal="http://xml.zope.org/namespaces/tal"
+  ...   >
+  ...   <Document>
+  ...     <tal:b tal:replace="structure provider:zgeo.kml.styles"/>
+  ...   </Document>
+  ... </kml>
+  ... ''')
+
+As you can see, we exprect the ``provider`` expression to simply look up the
+content provider and insert the HTML content at this place.
+
+Next we register the template as a view (browser page) for all objects:
+
+  >>> from zope.app.pagetemplate.simpleviewclass import SimpleViewClass
+  >>> KMLDoc = SimpleViewClass(templateFileName, name='kml')
+
+  >>> import zope.component
+  >>> import zope.interface
+  >>> from zope.publisher.interfaces import browser
+
+  >>> zope.component.provideAdapter(
+  ...     KMLDoc,
+  ...     (zope.interface.Interface, browser.IDefaultBrowserLayer),
+  ...     zope.interface.Interface,
+  ...     name='kml')
+
+Finally we look up the view and render it:
+
+  >>> view = zope.component.getMultiAdapter((place, request),
+  ...                                       name='kml')
+  >>> print view().strip()
+  <html>
+    <body>
+      <h1>My Web Page</h1>
+      <div class="left-column">
+        <div class="box">My Message</div>
+      </div>
+      <div class="main">
+        Content here
+      </div>
+    </body>
+  </html>
+    

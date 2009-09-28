@@ -15,6 +15,7 @@ Test serialization of a located Place to KML
     <kml xmlns="http://www.opengis.net/kml/2.2">
     <BLANKLINE>
       <Document>
+    <BLANKLINE>
         <Style id="defaultStyle">
           <LineStyle>
             <color>ffff0000</color>
@@ -23,7 +24,17 @@ Test serialization of a located Place to KML
           <PolyStyle>
             <color>33ff0000</color>
           </PolyStyle>
+          <BalloonStyle>
+            <text><![CDATA[
+              <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">
+              <div style="padding-top:1.5em"><h1>$[name]</h1></div>
+              $[description]
+              <div style="font-size:smaller">Copyright © Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>
+              </div>
+            ]]></text>
+          </BalloonStyle>
         </Style>
+    <BLANKLINE>
         <name>Ninoe</name>
         <visibility>1</visibility>
         <open>0</open>
@@ -36,10 +47,11 @@ Test serialization of a located Place to KML
             <description>
             <![CDATA[
               <div>
-                <p></p>
                 <p>URL: 
                   <a href="http://localhost/plone/places/2/position">http://localhost/plone/places/2/position</a>
                 </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
               </div>
             ]]>
             </description>
