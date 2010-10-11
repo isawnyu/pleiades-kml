@@ -25,11 +25,8 @@
       </PolyStyle>
       <BalloonStyle>
         <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">
-          <div style="padding-top:1.5em"><h1>$[name]</h1></div>
+          <h4>$[name]</h4>
           $[description]
-          <div style="font-size:smaller">Copyright © Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>
-          </div>
         <span tal:replace="structure string:]]&gt;"/></text>
       </BalloonStyle>
     </Style>
@@ -46,12 +43,17 @@
         <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p>URL: 
+            <p>URL:
               <a 
                 tal:attributes="href placemark/alternate_link" 
                 tal:content="placemark/alternate_link"
+                rel="alternate"
                 >ITEM URL
-              </a>
+              </a> 
+              <a tal:condition="placemark/edit_link|nothing"
+                tal:attributes="href placemark/edit_link"
+                rel="edit"
+                >edit</a>
             </p>
             <p tal:content="placemark/description">ITEM DESCRIPTION</p>
             <p>Attested: <span tal:content="placemark/timePeriods">A, B</span></p>
@@ -85,12 +87,16 @@
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p>URL: 
+            <p>URL:
               <a 
                 tal:attributes="href placemark/alternate_link" 
                 tal:content="placemark/alternate_link"
                 >ITEM URL
-              </a>
+              </a> 
+              <a tal:condition="placemark/edit_link|nothing"
+                tal:attributes="href placemark/edit_link"
+                rel="edit"
+                >edit</a>
             </p>
             <p tal:content="placemark/description">ITEM DESCRIPTION</p>
             <p>Attested: <span tal:content="placemark/timePeriods">A, B</span></p>

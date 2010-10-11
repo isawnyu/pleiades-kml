@@ -1,5 +1,5 @@
 import unittest
-from zope.testing import doctestunit
+from zope.testing import doctest, doctestunit
 from zope.component import testing
 from Testing import ZopeTestCase as ztc
 from Products.Five import zcml
@@ -8,6 +8,8 @@ from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import PloneSite
 import pleiades.kml
 from pleiades.kml.tests.base import PleiadesKMLFunctionalTestCase
+
+optionflags = doctest.ELLIPSIS | doctest.REPORTING_FLAGS #doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS | doctest.REPORT_ONLY_FIRST_FAILURE
 
 ptc.setupPloneSite()
 
@@ -44,27 +46,32 @@ def test_suite():
 
         ztc.FunctionalDocFileSuite(
             'places.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase
+            test_class=PleiadesKMLFunctionalTestCase,
+            optionflags=optionflags
             ),
 
         ztc.FunctionalDocFileSuite(
             'place.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase
+            test_class=PleiadesKMLFunctionalTestCase,
+            optionflags=optionflags
             ),
 
         ztc.FunctionalDocFileSuite(
             'place-gridsquare.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase
+            test_class=PleiadesKMLFunctionalTestCase,
+            optionflags=optionflags
             ),
             
         ztc.FunctionalDocFileSuite(
             'place-location.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase
+            test_class=PleiadesKMLFunctionalTestCase,
+            optionflags=optionflags
             ),
             
         ztc.FunctionalDocFileSuite(
             'topic.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase
+            test_class=PleiadesKMLFunctionalTestCase,
+            optionflags=optionflags
             ),
             
         #ztc.FunctionalDocFileSuite(

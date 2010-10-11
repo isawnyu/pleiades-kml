@@ -17,6 +17,12 @@ Test serialization of Topic to KML
       <Document>
     <BLANKLINE>
         <Style id="defaultStyle">
+          <IconStyle>
+            <scale>0.7</scale>
+            <Icon>
+              <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+            </Icon>
+          </IconStyle>
           <LineStyle>
             <color>ffff0000</color>
             <width>2</width>
@@ -38,7 +44,6 @@ Test serialization of Topic to KML
         <name></name>
         <visibility>1</visibility>
         <open>0</open>
-    <BLANKLINE>
     <BLANKLINE>
         <Placemark>
           <name>Ninoe</name>

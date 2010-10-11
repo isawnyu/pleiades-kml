@@ -17,6 +17,12 @@ Test serialization of PlaceContainer to KML
       <Document>
     <BLANKLINE>
         <Style id="defaultStyle">
+          <IconStyle>
+            <scale>0.7</scale>
+            <Icon>
+              <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+            </Icon>
+          </IconStyle>
           <LineStyle>
             <color>ffff0000</color>
             <width>2</width>
@@ -47,11 +53,11 @@ Test serialization of PlaceContainer to KML
             <description>
             <![CDATA[
               <div>
-                <p>URL: 
+                <p>URL:
                   <a href="http://localhost/plone/features/1">http://localhost/plone/features/1</a>
                 </p>
-               <p></p>
-               <p>Attested: <span>Roman</span></p>
+                <p></p>
+                <p>Attested: <span>Roman</span></p>
               </div>
             ]]>
             </description>
@@ -77,8 +83,8 @@ Test serialization of PlaceContainer to KML
                 <p>URL:
                   <a href="http://localhost/plone/places/2/position">http://localhost/plone/places/2/position</a>
                 </p>
-               <p></p>
-               <p>Attested: <span>None</span></p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
               </div>
             ]]>
             </description>
@@ -104,12 +110,14 @@ Test serialization of PlaceContainer to KML
                 <p>URL:
                   <a href="http://localhost/plone/places/3/undetermined">http://localhost/plone/places/3/undetermined</a>
                 </p>
-               <p></p>
-               <p>Attested: <span>None</span></p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
               </div>
             ]]>
             </description>
             <styleUrl>#defaultStyle</styleUrl>
+    <BLANKLINE>
+    <BLANKLINE>
             <Polygon>
               <outerBoundaryIs>
                 <LinearRing>
@@ -122,50 +130,50 @@ Test serialization of PlaceContainer to KML
     <BLANKLINE>
     <BLANKLINE>
     <BLANKLINE>
-       <Folder>
-         <name>Four</name>
-         <description></description>
-         <Placemark>
-           <name>Point 1</name>
-           <description>
-           <![CDATA[
-             <div>
-               <p>URL:
-                 <a href="http://localhost/plone/places/4/x1">http://localhost/plone/places/4/x1</a>
-               </p>
-               <p></p>
-               <p>Attested: <span>None</span></p>
-             </div>
-           ]]>
-           </description>
-           <styleUrl>#defaultStyle</styleUrl>
-           <Point>
-             <coordinates>-86.000000,34.000000,0.0</coordinates>
-           </Point>
+        <Folder>
+          <name>Four</name>
+          <description></description>
+          <Placemark>
+            <name>Point 1</name>
+            <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a href="http://localhost/plone/places/4/x1">http://localhost/plone/places/4/x1</a>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+            </description>
+            <styleUrl>#defaultStyle</styleUrl>
+            <Point>
+              <coordinates>-86.000000,34.000000,0.0</coordinates>
+            </Point>
     <BLANKLINE>
     <BLANKLINE>
-         </Placemark>
-         <Placemark>
-           <name>Point 2</name>
-           <description>
-           <![CDATA[
-             <div>
-               <p>URL:
-                 <a href="http://localhost/plone/places/4/x2">http://localhost/plone/places/4/x2</a>
-               </p>
-               <p></p>
-               <p>Attested: <span>None</span></p>
-             </div>
-           ]]>
-           </description>
-           <styleUrl>#defaultStyle</styleUrl>
-           <Point>
-             <coordinates>-87.000000,35.000000,0.0</coordinates>
-           </Point>
+          </Placemark>
+          <Placemark>
+            <name>Point 2</name>
+            <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a href="http://localhost/plone/places/4/x2">http://localhost/plone/places/4/x2</a>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+            </description>
+            <styleUrl>#defaultStyle</styleUrl>
+            <Point>
+              <coordinates>-87.000000,35.000000,0.0</coordinates>
+            </Point>
     <BLANKLINE>
     <BLANKLINE>
-         </Placemark>
-       </Folder>
+          </Placemark>
+        </Folder>
     <BLANKLINE>
     <BLANKLINE>
       </Document>

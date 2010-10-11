@@ -17,6 +17,12 @@ Test serialization of PlaceContainer to KML
       <Document>
     <BLANKLINE>
         <Style id="defaultStyle">
+          <IconStyle>
+            <scale>0.7</scale>
+            <Icon>
+              <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+            </Icon>
+          </IconStyle>
           <LineStyle>
             <color>ffff0000</color>
             <width>2</width>
@@ -47,7 +53,7 @@ Test serialization of PlaceContainer to KML
             <description>
             <![CDATA[
               <div>
-                <p>URL: 
+                <p>URL:
                   <a href="http://localhost/plone/features/1">http://localhost/plone/features/1</a>
                 </p>
                 <p></p>
@@ -87,6 +93,12 @@ Test a place with multiple locations
       <Document>
     <BLANKLINE>
         <Style id="defaultStyle">
+          <IconStyle>
+            <scale>0.7</scale>
+            <Icon>
+              <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+            </Icon>
+          </IconStyle>
           <LineStyle>
             <color>ffff0000</color>
             <width>2</width>
@@ -117,7 +129,7 @@ Test a place with multiple locations
             <description>
             <![CDATA[
               <div>
-                <p>URL: 
+                <p>URL:
                   <a href="http://localhost/plone/places/4/x1">http://localhost/plone/places/4/x1</a>
                 </p>
                 <p></p>
@@ -137,7 +149,7 @@ Test a place with multiple locations
             <description>
             <![CDATA[
               <div>
-                <p>URL: 
+                <p>URL:
                   <a href="http://localhost/plone/places/4/x2">http://localhost/plone/places/4/x2</a>
                 </p>
                 <p></p>

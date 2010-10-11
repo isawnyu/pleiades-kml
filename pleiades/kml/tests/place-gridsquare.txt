@@ -17,6 +17,12 @@ Test serialization of an unlocated Place to KML
       <Document>
     <BLANKLINE>
         <Style id="defaultStyle">
+          <IconStyle>
+            <scale>0.7</scale>
+            <Icon>
+              <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+            </Icon>
+          </IconStyle>
           <LineStyle>
             <color>ffff0000</color>
             <width>2</width>
@@ -56,6 +62,8 @@ Test serialization of an unlocated Place to KML
             ]]>
             </description>
             <styleUrl>#defaultStyle</styleUrl>
+    <BLANKLINE>
+    <BLANKLINE>
             <Polygon>
               <outerBoundaryIs>
                 <LinearRing>
@@ -63,8 +71,6 @@ Test serialization of an unlocated Place to KML
                 </LinearRing>
               </outerBoundaryIs>
             </Polygon>
-    <BLANKLINE>
-    <BLANKLINE>
           </Placemark>
         </Folder>
     <BLANKLINE>

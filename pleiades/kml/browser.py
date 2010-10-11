@@ -1,6 +1,7 @@
 from pleiades.capgrids import Grid
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.PleiadesEntity.content.interfaces import ILocation
 
 from zgeo.kml.browser import Document, Folder, Placemark
 from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
@@ -26,11 +27,23 @@ class GridPlacemark(Placemark):
 
 
 class PleiadesPlacemark(Placemark):
-    
+
+    @property
+    def description(self):
+        # For locations that use getDescription
+        return getattr(
+            self.context, 'getDescription', self.context.Description)()
+
     @property
     def timePeriods(self):
         return ', '.join([x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
 
+    @property
+    def edit_link(self):
+        if ILocation.providedBy(self.context):
+            return '%s/@@edit-geometry' % self.context.absolute_url()
+        return None
+        
 
 class PleiadesBrainPlacemark(BrainPlacemark):
     
