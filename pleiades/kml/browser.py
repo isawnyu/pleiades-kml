@@ -85,7 +85,6 @@ class PlaceFolder(Folder):
         for item in self.context.getFeatures():
             yield PleiadesPlacemark(item, self.request)
 
-
 class PlaceDocument(Document):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_document.pt')
@@ -93,6 +92,11 @@ class PlaceDocument(Document):
     @property
     def features(self):
         return iter([PlaceFolder(self.context, self.request)])
+
+    @property
+    def neighbors_kml(self):
+        return "%s/neighbors-kml" % self.context.absolute_url()
+
 
 class PlaceNeighborsDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_neighbors_document.pt')

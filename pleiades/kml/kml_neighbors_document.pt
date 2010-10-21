@@ -7,6 +7,10 @@
     condition="python:request and request.response.setHeader(
 		'Content-Type', 'application/vnd.google-earth.kml+xml;charset=utf-8')" 
     />
+  <tal:b 
+    condition="python:request and request.response.setHeader(
+    'Content-Disposition', 'filename=%s-neighbors.kml' % view.context.getId())" 
+    />
   <Document>
     
     <Style id="defaultStyle">
