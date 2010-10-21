@@ -95,7 +95,7 @@ class PlaceDocument(Document):
         return iter([PlaceFolder(self.context, self.request)])
 
 class PlaceNeighborsDocument(TopicDocument):
-    template = ViewPageTemplateFile('kml_topic_document.pt')
+    template = ViewPageTemplateFile('kml_neighbors_document.pt')
 
     @property
     def name(self):
