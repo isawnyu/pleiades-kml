@@ -1,10 +1,14 @@
+from Products.CMFCore.utils import getToolByName
+
 from pleiades.capgrids import Grid
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.PleiadesEntity.content.interfaces import ILocation
+from Products.PleiadesEntity.geo import NotLocatedError
 
 from zgeo.kml.browser import Document, Folder, Placemark
 from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
+from zgeo.geographer.interfaces import IGeoreferenced
 
 from zope.component import adapts
 from zope.publisher.interfaces import browser
@@ -49,7 +53,15 @@ class PleiadesBrainPlacemark(BrainPlacemark):
     
     @property
     def timePeriods(self):
-        return ', '.join([x.capitalize() for x in getattr(self.context, 'getTimePeriods', [])]) or 'None'
+        tp = getattr(self.context, 'getTimePeriods')
+        if tp is None:
+            return 'None'
+        else:
+            if callable(tp):
+                values = tp()
+            else:
+                values = tp
+        return ', '.join([x.capitalize() for v in values])
 
     @property
     def alternate_link(self):
@@ -82,6 +94,27 @@ class PlaceDocument(Document):
     def features(self):
         return iter([PlaceFolder(self.context, self.request)])
 
+class PlaceNeighborsDocument(TopicDocument):
+    template = ViewPageTemplateFile('kml_topic_document.pt')
+
+    @property
+    def name(self):
+        return "Neighborhood of %s" % self.dc.Title()
+
+    @property
+    def features(self):
+        catalog = getToolByName(self.context, 'portal_catalog')
+        try:
+            g = IGeoreferenced(self.context)
+        except NotLocatedError:
+            raise StopIteration
+        for brain in catalog(
+            geolocation={'query': (g.bounds, 20000.0), 'range': 'distance' }, 
+            portal_type={'query': ['Place']}):
+            if brain.getId == self.context.getId():
+                # skip self
+                continue
+            yield PleiadesBrainPlacemark(brain, self.request)
 
 class PleiadesDocument(Document):
     template = ViewPageTemplateFile('kml_document.pt')
@@ -94,7 +127,6 @@ class PleiadesTopicDocument(TopicDocument):
     def features(self):
         for brain in self.context.queryCatalog():
             yield PleiadesBrainPlacemark(brain, self.request)
-            
 
 class PleiadesStylesProvider(object):
     implements(IContentProvider)

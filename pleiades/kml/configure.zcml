@@ -43,6 +43,13 @@
     />
 
   <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="neighbors-kml"
+    class=".browser.PlaceNeighborsDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
     for="pleiades.workspace.interfaces.IWorkspaceCollection"
     name="kml"
     class=".browser.PleiadesTopicDocument"
