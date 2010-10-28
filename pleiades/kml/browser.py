@@ -42,11 +42,11 @@ class PleiadesPlacemark(Placemark):
     def timePeriods(self):
         return ', '.join([x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
 
-    @property
-    def edit_link(self):
-        if ILocation.providedBy(self.context):
-            return '%s/@@edit-geometry' % self.context.absolute_url()
-        return None
+    #@property
+    #def edit_link(self):
+    #    if ILocation.providedBy(self.context):
+    #        return '%s/@@edit-geometry' % self.context.absolute_url()
+    #    return None
         
 
 class PleiadesBrainPlacemark(BrainPlacemark):
@@ -113,7 +113,7 @@ class PlaceNeighborsDocument(TopicDocument):
         except NotLocatedError:
             raise StopIteration
         for brain in catalog(
-            geolocation={'query': (g.bounds, 20000.0), 'range': 'distance' }, 
+            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
             portal_type={'query': ['Place']}):
             if brain.getId == self.context.getId():
                 # skip self
