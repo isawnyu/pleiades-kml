@@ -10,9 +10,10 @@ Test serialization of PlaceContainer to KML
     200
     >>> r.getHeader('Content-Type')
     'application/vnd.google-earth.kml+xml;charset=utf-8'
-    >>> print r.getBody()
+    >>> print r.getBody() # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     <?xml version="1.0" encoding="utf-8"?>
     <kml xmlns="http://www.opengis.net/kml/2.2">
+    <BLANKLINE>
     <BLANKLINE>
       <Document>
     <BLANKLINE>
@@ -32,11 +33,8 @@ Test serialization of PlaceContainer to KML
           </PolyStyle>
           <BalloonStyle>
             <text><![CDATA[
-              <div style="background-image:url(http://pleiades.stoa.org/++resource++pleiades.notredame.images/background-nereid.gif); background-position:bottom center; background-repeat:no-repeat; padding: 1em 1em 0em">
-              <div style="padding-top:1.5em"><h1>$[name]</h1></div>
+              <h4>$[name]</h4>
               $[description]
-              <div style="font-size:smaller">Copyright © Ancient World Mapping Center and Institute for the Study of the Ancient World. Sharing and remixing permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).</div>
-              </div>
             ]]></text>
           </BalloonStyle>
         </Style>
@@ -49,12 +47,36 @@ Test serialization of PlaceContainer to KML
           <name>Ninoe</name>
           <description></description>
           <Placemark>
+            <name>Point 1</name>
+            <description>
+            <![CDATA[
+              <div>
+                <p>URL:
+                  <a rel="alternate"
+                     href="http://localhost/plone/places/1/location">http://localhost/plone/places/1/location</a>
+    <BLANKLINE>
+                </p>
+                <p></p>
+                <p>Attested: <span>None</span></p>
+              </div>
+            ]]>
+            </description>
+            <styleUrl>#defaultStyle</styleUrl>
+            <Point>
+              <coordinates>-86.480833,34.769722,0.0</coordinates>
+            </Point>
+    <BLANKLINE>
+    <BLANKLINE>
+          </Placemark>
+          <Placemark>
             <name>Ninoe</name>
             <description>
             <![CDATA[
               <div>
                 <p>URL:
-                  <a href="http://localhost/plone/features/1">http://localhost/plone/features/1</a>
+                  <a rel="alternate"
+                     href="http://localhost/plone/features/1">http://localhost/plone/features/1</a>
+    <BLANKLINE>
                 </p>
                 <p></p>
                 <p>Attested: <span>Roman</span></p>
@@ -70,6 +92,19 @@ Test serialization of PlaceContainer to KML
           </Placemark>
         </Folder>
     <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+        <!-- Neighbors -->
+        <Folder>
+          <name>The neighborhood</name>
+          <description>Places within some kilometers</description>
+          <visibility>1</visibility>
+          <NetworkLink>
+            <Link>
+              <href>http://localhost/plone/places/1/neighbors-kml</href>
+            </Link>
+          </NetworkLink>
+        </Folder>
     <BLANKLINE>
       </Document>
     </kml>

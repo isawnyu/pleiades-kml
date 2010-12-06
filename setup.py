@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.4.1'
+version = '0.5'
 
 setup(name='pleiades.kml',
       version=version,
@@ -24,7 +24,7 @@ setup(name='pleiades.kml',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'setuptools',
+          'pleiades.geographer',
           'zgeo.plone.kml'
           ],
       tests_require=[

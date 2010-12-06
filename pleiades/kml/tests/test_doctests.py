@@ -44,35 +44,35 @@ def test_suite():
         #    'README.txt', package='zgeo.plone.kml',
         #    test_class=PloneKMLFunctionalTestCase),
 
-        ztc.FunctionalDocFileSuite(
-            'places.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase,
-            optionflags=optionflags
-            ),
+        #ztc.FunctionalDocFileSuite(
+        #    'places.txt', package='pleiades.kml.tests',
+        #    test_class=PleiadesKMLFunctionalTestCase,
+        #    optionflags=optionflags
+        #    ),
 
-        ztc.FunctionalDocFileSuite(
-            'place.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase,
-            optionflags=optionflags
-            ),
+        #ztc.FunctionalDocFileSuite(
+        #    'place.txt', package='pleiades.kml.tests',
+        #    test_class=PleiadesKMLFunctionalTestCase,
+        #    optionflags=optionflags
+        #    ),
 
-        ztc.FunctionalDocFileSuite(
-            'place-gridsquare.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase,
-            optionflags=optionflags
-            ),
+        #ztc.FunctionalDocFileSuite(
+        #    'place-gridsquare.txt', package='pleiades.kml.tests',
+        #    test_class=PleiadesKMLFunctionalTestCase,
+        #    optionflags=optionflags
+        #    ),
             
-        ztc.FunctionalDocFileSuite(
-            'place-location.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase,
-            optionflags=optionflags
-            ),
+        #ztc.FunctionalDocFileSuite(
+        #    'place-location.txt', package='pleiades.kml.tests',
+        #    test_class=PleiadesKMLFunctionalTestCase,
+        #    optionflags=optionflags
+        #    ),
             
-        ztc.FunctionalDocFileSuite(
-            'topic.txt', package='pleiades.kml.tests',
-            test_class=PleiadesKMLFunctionalTestCase,
-            optionflags=optionflags
-            ),
+        #ztc.FunctionalDocFileSuite(
+        #    'topic.txt', package='pleiades.kml.tests',
+        #    test_class=PleiadesKMLFunctionalTestCase,
+        #    optionflags=optionflags
+        #    ),
             
         #ztc.FunctionalDocFileSuite(
         #    'large-folder-kml.txt', package='zgeo.plone.kml.tests',

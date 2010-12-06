@@ -4,7 +4,7 @@ from pleiades.capgrids import Grid
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.PleiadesEntity.content.interfaces import ILocation
-from Products.PleiadesEntity.geo import NotLocatedError
+from pleiades.geographer.geo import NotLocatedError
 
 from zgeo.kml.browser import Document, Folder, Placemark
 from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
@@ -34,20 +34,15 @@ class PleiadesPlacemark(Placemark):
 
     @property
     def description(self):
-        # For locations that use getDescription
-        return getattr(
-            self.context, 'getDescription', self.context.Description)()
+        return (
+            getattr(self.context, 'getDescription') or self.context.Description
+            )()
 
     @property
     def timePeriods(self):
-        return ', '.join([x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
+        return ', '.join(
+            [x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
 
-    #@property
-    #def edit_link(self):
-    #    if ILocation.providedBy(self.context):
-    #        return '%s/@@edit-geometry' % self.context.absolute_url()
-    #    return None
-        
 
 class PleiadesBrainPlacemark(BrainPlacemark):
     
@@ -61,29 +56,33 @@ class PleiadesBrainPlacemark(BrainPlacemark):
                 values = tp()
             else:
                 values = tp
-        return ', '.join([x.capitalize() for v in values])
+        return ', '.join([v.capitalize() for v in values])
 
     @property
     def alternate_link(self):
-        return self.context.getURL() #
-            
+        return self.context.getURL()
+
 
 class PlaceFolder(Folder):
     
     @property
     def description(self):
-        s = self.context.Description()
-        modernLocation = self.context.getModernLocation()
-        if modernLocation:
-            s += ', modern location: %s'  % modernLocation
-        return s
-    
+        return (
+            getattr(self.context, 'getDescription') or self.context.Description
+            )()
+
+    @property
+    def timePeriods(self):
+        return ', '.join(
+            [x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
+
     @property
     def features(self):
         for item in self.context.getLocations():
             yield PleiadesPlacemark(item, self.request)
         for item in self.context.getFeatures():
             yield PleiadesPlacemark(item, self.request)
+
 
 class PlaceDocument(Document):
     implements(IContainer)
@@ -95,7 +94,7 @@ class PlaceDocument(Document):
 
     @property
     def neighbors_kml(self):
-        return "%s/neighbors-kml" % self.context.absolute_url()
+        return "%s/neighbors-kml" % self.context.absolute_url().rstrip('/')
 
 
 class PlaceNeighborsDocument(TopicDocument):
