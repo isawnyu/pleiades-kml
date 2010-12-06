@@ -67,9 +67,7 @@ class PlaceFolder(Folder):
     
     @property
     def description(self):
-        return (
-            getattr(self.context, 'getDescription') or self.context.Description
-            )()
+        return self.context.Description()
 
     @property
     def timePeriods(self):
