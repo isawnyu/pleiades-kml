@@ -131,7 +131,7 @@
     </tal:features>
 
     <!-- Neighbors -->
-    <Folder>
+    <!-- Folder >
       <name>The neighborhood</name>
       <description>Places within some kilometers</description>
       <visibility>1</visibility>
@@ -140,7 +140,7 @@
           <href tal:content="view/neighbors_kml">HREF</href>
         </Link>
       </NetworkLink>
-    </Folder>
+    </Folder -->
 
   </Document>
 </kml>
