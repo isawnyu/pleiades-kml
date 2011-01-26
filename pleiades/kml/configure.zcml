@@ -57,6 +57,20 @@
     />
 
   <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="r-neighbors-kml"
+    class=".browser.PlaceRoughNeighborsDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="p-neighbors-kml"
+    class=".browser.PlacePreciseNeighborsDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
     for="pleiades.workspace.interfaces.IWorkspaceCollection"
     name="kml"
     class=".browser.PleiadesTopicDocument"

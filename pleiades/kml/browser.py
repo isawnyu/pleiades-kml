@@ -48,13 +48,17 @@ class PleiadesBrainPlacemark(BrainPlacemark):
     def timePeriods(self):
         tp = getattr(self.context, 'getTimePeriods')
         if tp is None:
-            return 'None'
+            retval = ''
         else:
             if callable(tp):
                 values = tp()
             else:
                 values = tp
-        return ', '.join([v.capitalize() for v in values])
+            try:
+                retval = ', '.join([v.capitalize() for v in values])
+            except TypeError:
+                retval = ''
+        return retval
 
     @property
     def alternate_link(self):
@@ -100,10 +104,21 @@ class PlaceNeighborhoodDocument(PlaceDocument):
 
 class PlaceNeighborsDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_neighbors_document.pt')
+    disposition_tmpl = "%s-neighbors.kml"
 
     @property
     def name(self):
-        return "Neighborhood of %s" % self.dc.Title()
+        return "All neighbors of %s" % self.dc.Title()
+
+    @property
+    def filename(self):
+        return self.disposition_tmpl % self.context.getId()
+
+    def criteria(self, g):
+        return dict(
+            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
+            portal_type={'query': ['Place']}
+            )
 
     @property
     def features(self):
@@ -112,13 +127,40 @@ class PlaceNeighborsDocument(TopicDocument):
             g = IGeoreferenced(self.context)
         except NotLocatedError:
             raise StopIteration
-        for brain in catalog(
-            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
-            portal_type={'query': ['Place']}):
+        for brain in catalog(**self.criteria(g)):
             if brain.getId == self.context.getId():
                 # skip self
                 continue
             yield PleiadesBrainPlacemark(brain, self.request)
+
+class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
+    disposition_tmpl = "%s-p-neighbors.kml"
+
+    @property
+    def name(self):
+        return "Precisely located neighbors of %s" % self.dc.Title()
+
+    def criteria(self, g):
+        return dict(
+            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
+            portal_type={'query': ['Place']},
+            location_precision={'query': ['precise']}
+            )
+
+class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
+    disposition_tmpl = "%s-r-neighbors.kml"
+
+    @property
+    def name(self):
+        return "Roughly located neighbors of %s" % self.dc.Title()
+
+    def criteria(self, g):
+        return dict(
+            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
+            portal_type={'query': ['Place']},
+            location_precision={'query': ['rough']}
+            )
+
 
 class PleiadesDocument(Document):
     template = ViewPageTemplateFile('kml_document.pt')
