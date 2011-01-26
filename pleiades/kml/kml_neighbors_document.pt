@@ -26,7 +26,7 @@
         <width>2</width>
       </LineStyle>
       <PolyStyle>
-        <color>333366cc</color>
+        <color>113366cc</color>
       </PolyStyle>
       <BalloonStyle>
         <text><span tal:replace="structure string:&lt;![CDATA[" />

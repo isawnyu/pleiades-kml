@@ -44,6 +44,13 @@
 
   <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="neighborhood-kml"
+    class=".browser.PlaceNeighborhoodDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
     name="neighbors-kml"
     class=".browser.PlaceNeighborsDocument"
     permission="zope2.View"

@@ -88,6 +88,11 @@ class PlaceDocument(Document):
     def features(self):
         return iter([PlaceFolder(self.context, self.request)])
 
+
+class PlaceNeighborhoodDocument(PlaceDocument):
+    implements(IContainer)
+    template = ViewPageTemplateFile('kml_neighborhood_document.pt')
+    
     @property
     def neighbors_kml(self):
         return "%s/neighbors-kml" % self.context.absolute_url().rstrip('/')
