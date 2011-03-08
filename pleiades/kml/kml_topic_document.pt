@@ -7,6 +7,10 @@
     condition="python:request and request.response.setHeader(
 		'Content-Type', 'application/vnd.google-earth.kml+xml;charset=utf-8')" 
     />
+  <tal:b 
+    condition="python:request and request.response.setHeader(
+    'Content-Disposition', 'filename=%s' % view.filename)" 
+    />
   <Document>
     
     <Style id="defaultStyle">
@@ -66,7 +70,7 @@
       <Polygon tal:condition="pm/hasPolygon">
         <outerBoundaryIs>
           <LinearRing>
-            <coordinates tal:content="pm/coords_kml">
+            <coordinates tal:content="python:pm.coords_kml[0]">
               COORDINATE LIST
             </coordinates>
           </LinearRing>

@@ -71,7 +71,7 @@
       <Polygon tal:condition="pm/hasPolygon">
         <outerBoundaryIs>
           <LinearRing>
-            <coordinates tal:content="pm/coords_kml">
+            <coordinates tal:content="python:pm.coords_kml[0]">
               COORDINATE LIST
             </coordinates>
           </LinearRing>

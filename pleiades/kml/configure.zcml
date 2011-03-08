@@ -91,5 +91,12 @@
     permission="zope2.View"
     />
 
+  <browser:page
+    for="*"
+    name="search_kml"
+    class=".browser.PleiadesSearchDocument"
+    permission="zope2.View"
+    />
+
 
 </configure>

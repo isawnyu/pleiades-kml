@@ -78,7 +78,7 @@
         <Polygon tal:condition="placemark/hasPolygon">
           <outerBoundaryIs>
             <LinearRing>
-              <coordinates tal:content="placemark/coords_kml">
+              <coordinates tal:content="python:placemark.coords_kml[0]">
                 COORDINATE LIST
               </coordinates>
             </LinearRing>
@@ -121,7 +121,7 @@
       <Polygon tal:condition="feature/hasPolygon">
         <outerBoundaryIs>
           <LinearRing>
-            <coordinates tal:content="feature/coords_kml">
+            <coordinates tal:content="python:feature.coords_kml[0]">
               COORDINATE LIST
             </coordinates>
           </LinearRing>

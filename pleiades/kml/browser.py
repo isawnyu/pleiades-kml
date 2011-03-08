@@ -92,14 +92,14 @@ class PlaceDocument(Document):
     def features(self):
         return iter([PlaceFolder(self.context, self.request)])
 
+    @property
+    def neighbors_kml(self):
+        return "%s/neighbors-kml" % self.context.absolute_url().rstrip('/')
+
 
 class PlaceNeighborhoodDocument(PlaceDocument):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_neighborhood_document.pt')
-    
-    @property
-    def neighbors_kml(self):
-        return "%s/neighbors-kml" % self.context.absolute_url().rstrip('/')
 
 
 class PlaceNeighborsDocument(TopicDocument):
@@ -116,7 +116,7 @@ class PlaceNeighborsDocument(TopicDocument):
 
     def criteria(self, g):
         return dict(
-            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
+            where={'query': (g.bounds, 10), 'range': 'nearest' }, 
             portal_type={'query': ['Place']}
             )
 
@@ -142,7 +142,7 @@ class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
 
     def criteria(self, g):
         return dict(
-            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
+           where={'query': (g.bounds, 20000.0), 'range': 'distance' }, 
             portal_type={'query': ['Place']},
             location_precision={'query': ['precise']}
             )
@@ -156,7 +156,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
 
     def criteria(self, g):
         return dict(
-            geolocation={'query': (g.bounds, 10), 'range': 'nearest' }, 
+            where={'query': g.bounds, 'range': 'intersection' }, 
             portal_type={'query': ['Place']},
             location_precision={'query': ['rough']}
             )
@@ -168,11 +168,37 @@ class PleiadesDocument(Document):
 
 class PleiadesTopicDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_topic_document.pt')
+    filename = "collection.kml"
 
     @property
     def features(self):
         for brain in self.context.queryCatalog():
             yield PleiadesBrainPlacemark(brain, self.request)
+
+
+class SearchDCProvider:
+    def Title(self):
+        return "Search"
+    def Description(self):
+        return "Advanced search for content"
+    def Creator(self):
+        return ""
+
+
+class PleiadesSearchDocument(TopicDocument):
+    template = ViewPageTemplateFile('kml_topic_document.pt')
+    filename = "search.kml"
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.dc = SearchDCProvider()
+
+    @property
+    def features(self):
+        for brain in self.context.queryCatalog():
+            yield PleiadesBrainPlacemark(brain, self.request)
+
 
 class PleiadesStylesProvider(object):
     implements(IContentProvider)

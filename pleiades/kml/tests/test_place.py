@@ -13,8 +13,10 @@ class AdaptPlaceTestCase(PleiadesKMLTestCase):
     def test_place(self):
         class MockPlace:
             implements(zope.dublincore.interfaces.ICMFDublinCore)
-            def getDescription(self):
+            def Description(self):
                 return "A place"
+            def Title(self):
+                return "Place A"
             def getTimePeriods(self):
                 return ['Archaic', 'Classical']
         request = TestRequest()
@@ -27,8 +29,10 @@ class AdaptPlaceFolderTestCase(PleiadesKMLTestCase):
     def test_place_folder(self):
         class MockPlace:
             implements(zope.dublincore.interfaces.ICMFDublinCore)
-            def getDescription(self):
+            def Description(self):
                 return "A place"
+            def Title(self):
+                return "Place A"
             def getTimePeriods(self):
                 return ['Archaic', 'Classical']
             def getLocations(self):
@@ -44,8 +48,10 @@ class PlaceDocumentTestCase(PleiadesKMLTestCase):
     def test_place_document(self):
         class MockPlace:
             implements(zope.dublincore.interfaces.ICMFDublinCore)
-            def getDescription(self):
+            def Description(self):
                 return "A place"
+            def Title(self):
+                return "Place A"
             def getTimePeriods(self):
                 return ['Archaic', 'Classical']
             def getLocations(self):
@@ -69,7 +75,7 @@ class PlaceNeighborsDocumentTestCase(PleiadesKMLTestCase):
                 zope.dublincore.interfaces.ICMFDublinCore, IGeoreferenced)
             def Title(self):
                 return "Foo"
-            def getDescription(self):
+            def Description(self):
                 return "A place"
             def getTimePeriods(self):
                 return ['Archaic', 'Classical']
@@ -86,7 +92,7 @@ class PlaceNeighborsDocumentTestCase(PleiadesKMLTestCase):
         request = TestRequest()
         m = MockPlace()
         p = PlaceNeighborsDocument(m, request)
-        self.assertEqual(p.name, "Neighborhood of Foo")
+        self.assertEqual(p.name, "All neighbors of Foo")
         self.assertEqual(len(list(p.features)), 0)
         
 
