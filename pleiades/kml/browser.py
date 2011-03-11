@@ -6,7 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.PleiadesEntity.content.interfaces import ILocation
 from pleiades.geographer.geo import NotLocatedError
 
-from zgeo.kml.browser import Document, Folder, Placemark
+from zgeo.kml.browser import Document, Folder, Placemark, to_string
 from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
 from zgeo.geographer.interfaces import IGeoreferenced
 
@@ -18,6 +18,18 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.dublincore.interfaces import ICMFDublinCore
 from zgeo.kml.interfaces import IFeature, IPlacemark, IContainer
 
+def coords_to_kml(geom):
+    gtype = geom['type']
+    if gtype == 'Point':
+        return to_string((geom['coordinates'],))
+    elif gtype == 'Polygon':
+        if len(geom['coordinates']) == 1:
+            return (to_string(geom['coordinates'][0]), None)
+        elif len(geom['coordinates']) > 1:
+            return (
+                to_string(geom['coordinates'][0]), to_string(geom['coordinates'][1]))
+    else:
+        return to_string(geom['coordinates'])
 
 class GridPlacemark(Placemark):
     
@@ -147,7 +159,46 @@ class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
             location_precision={'query': ['precise']}
             )
 
+
+class RelatedLocationPlacemark:
+    """A placemark for a location that is related to roughly located objects"""
+    
+    def __init__(self, geom, objects):
+        # Objects here are catalog brains - metadata
+        self.geom = geom
+        self.objects = objects
+    
+    @property
+    def id(self):
+        return repr(self.geom)
+
+    @property
+    def name(self):
+        return "Aggregation of roughly located objects"
+
+    @property
+    def alternate_link(self):
+        return self.context.id
+
+    @property
+    def hasPoint(self):
+        return int(self.geom['type'] == 'Point')
+
+    @property
+    def hasLineString(self):
+        return int(self.geom['type'] == 'LineString')
+
+    @property
+    def hasPolygon(self):
+        return int(self.geom['type'] == 'Polygon')
+
+    @property
+    def coords_kml(self):
+        return coords_to_kml(self.geom)
+
+
 class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
+    template = ViewPageTemplateFile('kml_rough_neighbors_document.pt')
     disposition_tmpl = "%s-r-neighbors.kml"
 
     @property
@@ -160,6 +211,32 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
             portal_type={'query': ['Place']},
             location_precision={'query': ['rough']}
             )
+
+    @property
+    def features(self):
+        catalog = getToolByName(self.context, 'portal_catalog')
+        try:
+            g = IGeoreferenced(self.context)
+        except NotLocatedError:
+            raise StopIteration
+        geoms = {}
+        objects = {}
+        for brain in catalog(**self.criteria(g)):
+            if brain.getId == self.context.getId():
+                # skip self
+                continue
+            geo = brain.zgeo_geometry
+            if geo and geo.has_key('type') and geo.has_key('coordinates'):
+                # key = (geo['type'], geo['coordinates'])
+                key = repr(geo)
+                if key not in geoms:
+                    geoms[key] = geo
+                if key not in geoms:
+                    objects[key].append(brain)
+                else:
+                    objects[key] = [brain]
+        for key, brains in objects.items():
+            yield RelatedLocationPlacemark(geoms[key], brains)
 
 
 class PleiadesDocument(Document):

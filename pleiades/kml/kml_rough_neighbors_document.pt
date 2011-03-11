@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml
+  xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  >
+  <tal:b 
+    condition="python:request and request.response.setHeader(
+		'Content-Type', 'application/vnd.google-earth.kml+xml;charset=utf-8')" 
+    />
+  <tal:b 
+    condition="python:request and request.response.setHeader(
+    'Content-Disposition', 'filename=%s' % view.filename)" 
+    />
+  <Document>
+    
+    <Style id="defaultStyle">
+      <IconStyle>
+        <color>ff3366cc</color>
+        <scale>0.7</scale>
+        <Icon>
+          <href>http://atlantides.org/images/justice-brown.png</href>
+        </Icon>
+      </IconStyle>
+      <LineStyle>
+        <color>ff3366cc</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>333366cc</color>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><span tal:replace="structure string:&lt;![CDATA[" />
+          <h4>$[name]</h4>
+          $[description]
+        <span tal:replace="structure string:]]&gt;"/></text>
+      </BalloonStyle>
+    </Style>
+    
+    <name tal:content="view/name">TITLE</name>
+    <visibility>1</visibility>
+    <open>0</open>
+    <tal:features tal:repeat="pm view/features">
+    <Placemark>
+      <name tal:content="pm/name">TITLE</name>
+      <description>
+        <span tal:replace="structure string:&lt;![CDATA[" />
+          <div>
+            <p>Location partially overlaps or contains the footprints of:</p>
+            <ul>
+              <li tal:repeat="obj pm/objects">
+              <a 
+                tal:attributes="href obj/getURL" 
+                tal:content="obj/Title"
+                >ITEM URL
+              </a>
+              </li>
+            </ul>
+          </div>
+        <span tal:replace="structure string:]]&gt;" />
+      </description>
+      <styleUrl>#defaultStyle</styleUrl>
+      <Point tal:condition="pm/hasPoint">
+        <coordinates tal:content="pm/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </Point>
+      <LineString tal:condition="pm/hasLineString">
+        <coordinates tal:content="pm/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </LineString>
+      <Polygon tal:condition="pm/hasPolygon">
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates tal:content="python:pm.coords_kml[0]">
+              COORDINATE LIST
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    </tal:features>
+  </Document>
+</kml>
