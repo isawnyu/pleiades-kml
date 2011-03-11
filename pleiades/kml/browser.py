@@ -231,7 +231,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
                 key = repr(geo)
                 if key not in geoms:
                     geoms[key] = geo
-                if key not in geoms:
+                if key not in objects:
                     objects[key].append(brain)
                 else:
                     objects[key] = [brain]
