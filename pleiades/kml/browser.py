@@ -1,12 +1,10 @@
+from shapely.geometry import asShape
+
 from Products.CMFCore.utils import getToolByName
-
-from pleiades.capgrids import Grid
-
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.PleiadesEntity.content.interfaces import ILocation
-from pleiades.geographer.geo import NotLocatedError
 
 from zgeo.kml.browser import Document, Folder, Placemark, to_string
+from zgeo.kml.interfaces import IFeature, IPlacemark, IContainer
 from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
 from zgeo.geographer.interfaces import IGeoreferenced
 
@@ -16,7 +14,11 @@ from zope.contentprovider.interfaces import IContentProvider
 from zope.interface import implements, Interface
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.dublincore.interfaces import ICMFDublinCore
-from zgeo.kml.interfaces import IFeature, IPlacemark, IContainer
+
+from Products.PleiadesEntity.content.interfaces import ILocation
+from pleiades.capgrids import Grid
+from pleiades.geographer.geo import NotLocatedError
+from pleiades.capgrids import Grid
 
 def coords_to_kml(geom):
     gtype = geom['type']
@@ -30,6 +32,13 @@ def coords_to_kml(geom):
                 to_string(geom['coordinates'][0]), to_string(geom['coordinates'][1]))
     else:
         return to_string(geom['coordinates'])
+
+class W(object):
+    # spatial 'within' wrapper for use as a sorting key
+    def __init__(self, o):
+        self.o = o
+    def __lt__(self, other):
+        return asShape(self.o.geom).within(asShape(other.o.geom))
 
 class GridPlacemark(Placemark):
     
@@ -229,14 +238,19 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
             if geo and geo.has_key('type') and geo.has_key('coordinates'):
                 # key = (geo['type'], geo['coordinates'])
                 key = repr(geo)
-                if key not in geoms:
+                if not key in geoms:
                     geoms[key] = geo
-                if key not in objects:
+                if key in objects:
                     objects[key].append(brain)
                 else:
                     objects[key] = [brain]
-        for key, brains in objects.items():
-            yield RelatedLocationPlacemark(geoms[key], brains)
+        placemarks = sorted(
+            [RelatedLocationPlacemark(
+                geoms[key], brains) for key, brains in objects.items()],
+                key=W,
+                reverse=True)
+        for placemark in placemarks:
+            yield placemark
 
 
 class PleiadesDocument(Document):
