@@ -122,6 +122,18 @@ class PlaceNeighborhoodDocument(PlaceDocument):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_neighborhood_document.pt')
 
+    @property
+    def kml(self):
+        return "%s/kml" % self.context.absolute_url().rstrip('/')
+
+    @property
+    def r_neighbors_kml(self):
+        return "%s/r-neighbors-kml" % self.context.absolute_url().rstrip('/')
+
+    @property
+    def p_neighbors_kml(self):
+        return "%s/p-neighbors-kml" % self.context.absolute_url().rstrip('/')
+
 
 class PlaceNeighborsDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_neighbors_document.pt')
