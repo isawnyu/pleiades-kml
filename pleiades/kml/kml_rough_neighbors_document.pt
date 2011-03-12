@@ -45,7 +45,7 @@
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p>Location partially overlaps or contains the footprints of:</p>
+            <p><span tal:content="pm/description">DESCR</span> partially overlaps or contains the location(s) of:</p>
             <ul>
               <li tal:repeat="obj pm/objects">
               <a 

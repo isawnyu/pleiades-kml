@@ -198,6 +198,11 @@ class RelatedLocationPlacemark:
         return "Aggregation of roughly located objects"
 
     @property
+    def description(self):
+        box = asShape(self.geom).bounds
+        return "%s by %s cell" % (box[2]-box[0], box[3]-box[1])
+
+    @property
     def alternate_link(self):
         return self.context.id
 
@@ -260,7 +265,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
             [RelatedLocationPlacemark(
                 geoms[key], brains) for key, brains in objects.items()],
                 key=W,
-                reverse=True)
+                reverse=False)
         for placemark in placemarks:
             yield placemark
 
