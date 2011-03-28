@@ -45,14 +45,14 @@
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p><span tal:content="pm/description">DESCR</span> partially overlaps or contains the location(s) of:</p>
+            <p>This <span tal:content="pm/description">DESCR</span> contains or partially overlaps <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s):</p>
             <ul>
               <li tal:repeat="obj pm/objects">
               <a 
-                tal:attributes="href obj/getURL" 
-                tal:content="obj/Title"
+                tal:attributes="href obj/alternate_link" 
+                tal:content="obj/name"
                 >ITEM URL
-              </a>
+              </a> <em>(<span tal:content="obj/featureTypes">TYPES</span>; <span tal:content="obj/timePeriods">PERIODS</span>)</em>: <span tal:content="obj/altLocation|nothing">Alt Location</span>
               </li>
             </ul>
           </div>

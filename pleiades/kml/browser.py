@@ -82,6 +82,26 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         return retval
 
     @property
+    def featureTypes(self):
+        ft = getattr(self.context, 'getFeatureType')
+        if ft is None:
+            retval = ''
+        else:
+            if callable(ft):
+                values = ft()
+            else:
+                values = ft
+            try:
+                retval = ', '.join([v.capitalize() for v in values])
+            except TypeError:
+                retval = ''
+        return retval
+
+    @property
+    def altLocation(self):
+        return self.context.getModernLocation or self.context.Description.listrip('An ancient place, cited: ')
+
+    @property
     def alternate_link(self):
         return self.context.getURL()
 
@@ -200,7 +220,7 @@ class RelatedLocationPlacemark:
     @property
     def description(self):
         box = asShape(self.geom).bounds
-        return "%s by %s cell" % (box[2]-box[0], box[3]-box[1])
+        return "%s degree by %s degree cell" % (box[2]-box[0], box[3]-box[1])
 
     @property
     def alternate_link(self):
@@ -251,6 +271,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
             if brain.getId == self.context.getId():
                 # skip self
                 continue
+            item = PleiadesBrainPlacemark(brain, self.request)
             geo = brain.zgeo_geometry
             if geo and geo.has_key('type') and geo.has_key('coordinates'):
                 # key = (geo['type'], geo['coordinates'])
@@ -258,12 +279,12 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
                 if not key in geoms:
                     geoms[key] = geo
                 if key in objects:
-                    objects[key].append(brain)
+                    objects[key].append(item)
                 else:
-                    objects[key] = [brain]
+                    objects[key] = [item]
         placemarks = sorted(
             [RelatedLocationPlacemark(
-                geoms[key], brains) for key, brains in objects.items()],
+                geoms[key], val) for key, val in objects.items()],
                 key=W,
                 reverse=False)
         for placemark in placemarks:
