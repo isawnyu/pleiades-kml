@@ -1,5 +1,7 @@
+import logging
 from shapely.geometry import asShape
 
+from plone.memoize.view import memoize
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -19,6 +21,8 @@ from Products.PleiadesEntity.content.interfaces import ILocation
 from pleiades.capgrids import Grid
 from pleiades.geographer.geo import NotLocatedError
 from pleiades.capgrids import Grid
+
+log = logging.getLogger('pleiades.kml')
 
 def coords_to_kml(geom):
     gtype = geom['type']
@@ -204,11 +208,12 @@ class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
 class RelatedLocationPlacemark:
     """A placemark for a location that is related to roughly located objects"""
     
-    def __init__(self, geom, objects):
+    def __init__(self, context, geom, objects):
         # Objects here are catalog brains - metadata
+        self.context = context
         self.geom = geom
         self.objects = objects
-    
+
     @property
     def id(self):
         return repr(self.geom)
@@ -224,7 +229,10 @@ class RelatedLocationPlacemark:
 
     @property
     def alternate_link(self):
-        return self.context.id
+        portal_url = getToolByName(self.context, 'portal_url')()
+        query = '&'.join(
+            "getId:list=%s" % ob.context.getId for ob in self.objects)
+        return "%s/search?%s" % (portal_url, query)
 
     @property
     def hasPoint(self):
@@ -265,6 +273,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
             g = IGeoreferenced(self.context)
         except NotLocatedError:
             raise StopIteration
+        log.debug("Criteria: %s", self.criteria(g))
         geoms = {}
         objects = {}
         for brain in catalog(**self.criteria(g)):
@@ -284,7 +293,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
                     objects[key] = [item]
         placemarks = sorted(
             [RelatedLocationPlacemark(
-                geoms[key], val) for key, val in objects.items()],
+                self.context, geoms[key], val) for key, val in objects.items()],
                 key=W,
                 reverse=False)
         for placemark in placemarks:

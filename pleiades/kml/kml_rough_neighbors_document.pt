@@ -45,7 +45,8 @@
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p>This <span tal:content="pm/description">DESCR</span> contains or partially overlaps <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s):</p>
+            <a tal:attributes="href pm/alternate_link"><h4>Search results</h4></a>
+            <p>This <span tal:content="pm/description">DESCR</span> contains <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s):</p>
             <ul>
               <li tal:repeat="obj pm/objects">
               <a 
