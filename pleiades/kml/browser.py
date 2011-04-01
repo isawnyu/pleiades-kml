@@ -232,7 +232,7 @@ class RelatedLocationPlacemark:
         portal_url = getToolByName(self.context, 'portal_url')()
         query = '&'.join(
             "getId:list=%s" % ob.context.getId for ob in self.objects)
-        return "%s/search?%s" % (portal_url, query)
+        return "%s/search?location_precision=rough&%s" % (portal_url, query)
 
     @property
     def hasPoint(self):

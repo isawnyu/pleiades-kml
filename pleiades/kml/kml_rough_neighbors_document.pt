@@ -45,7 +45,6 @@
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <a tal:attributes="href pm/alternate_link"><h4>Search results</h4></a>
             <p>This <span tal:content="pm/description">DESCR</span> contains <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s):</p>
             <ul>
               <li tal:repeat="obj pm/objects">
@@ -56,6 +55,7 @@
               </a> <em>(<span tal:content="obj/featureTypes">TYPES</span>; <span tal:content="obj/timePeriods">PERIODS</span>)</em>: <span tal:content="obj/altLocation|nothing">Alt Location</span>
               </li>
             </ul>
+            <p><a tal:attributes="href pm/alternate_link">Permalink</a></p>
           </div>
         <span tal:replace="structure string:]]&gt;" />
       </description>
