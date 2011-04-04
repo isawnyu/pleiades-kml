@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kml
   xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   >
   <tal:b 
@@ -30,8 +31,19 @@
       </PolyStyle>
       <BalloonStyle>
         <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <h4>$[name]</h4>
-          $[description]
+          <div><table cellspacing="5">
+            <tr>
+              <td><a href="http://pleiades.stoa.org"><img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/></a></td>
+              <td class="text-align: top">
+              <h1 style="color: #333; font-family: Verdana, sans-serif">$[name]</h1>
+              <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">$[address]</a></p>
+              </td>
+            </tr>
+          </table></div>
+          <div style="color: #333; margin-left: 1em">
+            $[description]
+            <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">Details</a></p>
+          </div>
         <span tal:replace="structure string:]]&gt;"/></text>
       </BalloonStyle>
     </Style>
@@ -42,19 +54,19 @@
     <tal:features tal:repeat="pm view/features">
     <Placemark>
       <name tal:content="pm/name">TITLE</name>
+      <atom:link tal:attributes="href pm/alternate_link"/>
+      <address tal:content="pm/alternate_link"/>
+      <atom:author>
+        <atom:name tal:content="pm/context/Creator">NAME</atom:name>
+        <atom:link tal:attributes="href pm/alternate_link"/>
+      </atom:author>
+      <Snippet tal:content="string:${pm/featureTypes}; ${pm/timePeriods}">X</Snippet>
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
-          <div>
-            <p>URL:
-              <a 
-                tal:attributes="href pm/alternate_link" 
-                tal:content="pm/alternate_link"
-                >ITEM URL
-              </a>
-            </p>
-            <p tal:content="pm/description">ITEM DESCRIPTION</p>
-            <p>Attested: <span tal:content="pm/timePeriods">A, B</span></p>
-          </div>
+          <p><em tal:content="pm/description">ITEM DESCRIPTION</em></p>
+          <p>Tags: <span tal:content="python:','.join(pm.context.Subject)">TAGS</span></p>
+          <p>Feature types: <span tal:content="pm/featureTypes">TYPES</span></p>
+          <p>Time periods: <span tal:content="pm/timePeriods">PERIODS</span></p>
         <span tal:replace="structure string:]]&gt;" />
       </description>
       <styleUrl>#defaultStyle</styleUrl>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kml
   xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   >
   <tal:b 
@@ -42,10 +43,11 @@
     <tal:features tal:repeat="pm view/features">
     <Placemark>
       <name tal:content="pm/name">TITLE</name>
+      <atom:link tal:attributes="href pm/alternate_link"/>
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p>This <span tal:content="pm/description">DESCR</span> contains <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s):</p>
+            <p>This <span tal:content="pm/description">DESCR</span> contains <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s) [<a tal:attributes="href pm/alternate_link"/>permalink</a>]:</p>
             <ul>
               <li tal:repeat="obj pm/objects">
               <a 
@@ -55,7 +57,6 @@
               </a> <em>(<span tal:content="obj/featureTypes">TYPES</span>; <span tal:content="obj/timePeriods">PERIODS</span>)</em>: <span tal:content="obj/altLocation|nothing">Alt Location</span>
               </li>
             </ul>
-            <p><a tal:attributes="href pm/alternate_link">Permalink</a></p>
           </div>
         <span tal:replace="structure string:]]&gt;" />
       </description>
