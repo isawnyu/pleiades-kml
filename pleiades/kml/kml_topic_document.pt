@@ -14,7 +14,7 @@
     />
   <Document>
     
-    <Style id="defaultStyle">
+    <Style id="preciseStyle">
       <IconStyle>
         <scale>0.7</scale>
         <Icon>
@@ -46,29 +46,60 @@
         <span tal:replace="structure string:]]&gt;"/></text>
       </BalloonStyle>
     </Style>
-    
+    <Style id="aggregateStyle">
+      <IconStyle>
+        <scale>0.7</scale>
+        <Icon>
+          <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+        </Icon>
+      </IconStyle>
+      <LineStyle>
+        <color>ffff0000</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>33ff0000</color>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><span tal:replace="structure string:&lt;![CDATA[" />
+          <div><table cellspacing="5">
+            <tr>
+              <td><a href="http://pleiades.stoa.org"><img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/></a></td>
+              <td class="text-align: top">
+              <h3 style="color: #333; font-family: Verdana, sans-serif">$[name]</h3>
+              </td>
+            </tr>
+          </table></div>
+          <div style="color: #333; margin-left: 1em">
+            $[description]
+            <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">Permalink</a></p>
+          </div>
+        <span tal:replace="structure string:]]&gt;"/></text>
+      </BalloonStyle>
+    </Style>
+ 
     <name tal:content="view/name">TITLE</name>
     <visibility>1</visibility>
     <open>0</open>
     <tal:features tal:repeat="pm view/features">
-    <Placemark>
+    <Placemark tal:condition="not:pm/objects|nothing">
       <name tal:content="pm/name">TITLE</name>
       <atom:link tal:attributes="href pm/alternate_link"/>
       <address tal:content="pm/alternate_link"/>
       <atom:author>
         <atom:name tal:content="pm/context/Creator">NAME</atom:name>
-        <atom:link tal:attributes="href pm/alternate_link"/>
+        <atom:uri tal:attributes="href pm/alternate_link"/>
       </atom:author>
       <Snippet tal:content="string:${pm/featureTypes}; ${pm/timePeriods}">X</Snippet>
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm/description">ITEM DESCRIPTION</em></p>
-          <p>Tags: <span tal:content="python:','.join(pm.context.Subject)">TAGS</span></p>
+          <p>Tags: <span tal:content="python:', '.join(pm.context.Subject)">TAGS</span></p>
           <p>Feature types: <span tal:content="pm/featureTypes">TYPES</span></p>
           <p>Time periods: <span tal:content="pm/timePeriods">PERIODS</span></p>
         <span tal:replace="structure string:]]&gt;" />
       </description>
-      <styleUrl>#defaultStyle</styleUrl>
+      <styleUrl>#preciseStyle</styleUrl>
       <Point tal:condition="pm/hasPoint">
         <coordinates tal:content="pm/coords_kml">
           COORDINATE LIST
@@ -89,6 +120,51 @@
         </outerBoundaryIs>
       </Polygon>
     </Placemark>
+    <Placemark tal:condition="pm/objects|nothing">
+      <name tal:content="pm/name">TITLE</name>
+      <atom:link tal:attributes="href pm/alternate_link"/>
+      <address tal:content="pm/alternate_link"/>
+      <description>
+        <span tal:replace="structure string:&lt;![CDATA[" />
+          <div>
+            <p>This <span tal:content="pm/description">DESCR</span> 
+            contains <span tal:content="python:len(pm.objects)">N</span> 
+            imprecisely located place(s): </p>
+            <ul>
+              <li tal:repeat="obj pm/objects">
+              <a
+                style="color: #2575AD; text-decoration: underline"
+                tal:attributes="href obj/alternate_link" 
+                tal:content="obj/name"
+                >ITEM URL
+              </a> <em>(<span tal:content="obj/featureTypes">TYPES</span>; <span tal:content="obj/timePeriods">PERIODS</span>)</em>: <span tal:content="obj/altLocation|nothing">Alt Location</span>
+              </li>
+            </ul>
+          </div>
+        <span tal:replace="structure string:]]&gt;" />
+      </description>
+      <styleUrl>#aggregateStyle</styleUrl>
+      <Point tal:condition="pm/hasPoint">
+        <coordinates tal:content="pm/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </Point>
+      <LineString tal:condition="pm/hasLineString">
+        <coordinates tal:content="pm/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </LineString>
+      <Polygon tal:condition="pm/hasPolygon">
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates tal:content="python:pm.coords_kml[0]">
+              COORDINATE LIST
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
     </tal:features>
   </Document>
 </kml>

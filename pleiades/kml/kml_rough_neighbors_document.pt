@@ -14,29 +14,38 @@
     />
   <Document>
     
-    <Style id="defaultStyle">
+    <Style id="aggregateStyle">
       <IconStyle>
-        <color>ff3366cc</color>
         <scale>0.7</scale>
         <Icon>
-          <href>http://atlantides.org/images/justice-brown.png</href>
+          <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
         </Icon>
       </IconStyle>
       <LineStyle>
-        <color>ff3366cc</color>
+        <color>ffff0000</color>
         <width>2</width>
       </LineStyle>
       <PolyStyle>
-        <color>333366cc</color>
+        <color>33ff0000</color>
       </PolyStyle>
       <BalloonStyle>
         <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <h4>$[name]</h4>
-          $[description]
+          <div><table cellspacing="5">
+            <tr>
+              <td><a href="http://pleiades.stoa.org"><img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/></a></td>
+              <td class="text-align: top">
+              <h3 style="color: #333; font-family: Verdana, sans-serif">$[name]</h3>
+              </td>
+            </tr>
+          </table></div>
+          <div style="color: #333; margin-left: 1em">
+            $[description]
+            <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">Permalink</a></p>
+          </div>
         <span tal:replace="structure string:]]&gt;"/></text>
       </BalloonStyle>
     </Style>
-    
+ 
     <name tal:content="view/name">TITLE</name>
     <visibility>1</visibility>
     <open>0</open>
@@ -44,13 +53,17 @@
     <Placemark>
       <name tal:content="pm/name">TITLE</name>
       <atom:link tal:attributes="href pm/alternate_link"/>
+      <address tal:content="pm/alternate_link"/>
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <p>This <span tal:content="pm/description">DESCR</span> contains <span tal:content="python:len(pm.objects)">N</span> imprecisely located place(s) [<a tal:attributes="href pm/alternate_link"/>permalink</a>]:</p>
+            <p>This <span tal:content="pm/description">DESCR</span> 
+            contains <span tal:content="python:len(pm.objects)">N</span> 
+            imprecisely located place(s): </p>
             <ul>
               <li tal:repeat="obj pm/objects">
-              <a 
+              <a
+                style="color: #2575AD; text-decoration: underline"
                 tal:attributes="href obj/alternate_link" 
                 tal:content="obj/name"
                 >ITEM URL
@@ -60,7 +73,7 @@
           </div>
         <span tal:replace="structure string:]]&gt;" />
       </description>
-      <styleUrl>#defaultStyle</styleUrl>
+      <styleUrl>#aggregateStyle</styleUrl>
       <Point tal:condition="pm/hasPoint">
         <coordinates tal:content="pm/coords_kml">
           COORDINATE LIST
@@ -81,6 +94,8 @@
         </outerBoundaryIs>
       </Polygon>
     </Placemark>
+
     </tal:features>
   </Document>
 </kml>
+

@@ -205,7 +205,7 @@ class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
             )
 
 
-class RelatedLocationPlacemark:
+class AggregationPlacemark:
     """A placemark for a location that is related to roughly located objects"""
     
     def __init__(self, context, geom, objects):
@@ -292,7 +292,7 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
                 else:
                     objects[key] = [item]
         placemarks = sorted(
-            [RelatedLocationPlacemark(
+            [AggregationPlacemark(
                 self.context, geoms[key], val) for key, val in objects.items()],
                 key=W,
                 reverse=False)
@@ -310,8 +310,32 @@ class PleiadesTopicDocument(TopicDocument):
 
     @property
     def features(self):
-        for brain in self.context.queryCatalog():
+        # Pass extra location precision param through the request
+        request = getattr(self, 'REQUEST', {})
+        request['location_precision'] = 'precise'
+        for brain in self.context.queryCatalog(request):
             yield PleiadesBrainPlacemark(brain, self.request)
+        geoms = {}
+        objects = {}
+        request['location_precision'] = 'rough'
+        for brain in self.context.queryCatalog(request):
+            item = PleiadesBrainPlacemark(brain, self.request)
+            geo = brain.zgeo_geometry
+            if geo and geo.has_key('type') and geo.has_key('coordinates'):
+                key = repr(geo)
+                if not key in geoms:
+                    geoms[key] = geo
+                if key in objects:
+                    objects[key].append(item)
+                else:
+                    objects[key] = [item]
+        placemarks = sorted(
+            [AggregationPlacemark(
+                self.context, geoms[key], val) for key, val in objects.items()],
+                key=W,
+                reverse=False)
+        for placemark in placemarks:
+            yield placemark
 
 
 class SearchDCProvider:
@@ -323,7 +347,7 @@ class SearchDCProvider:
         return ""
 
 
-class PleiadesSearchDocument(TopicDocument):
+class PleiadesSearchDocument(PleiadesTopicDocument):
     template = ViewPageTemplateFile('kml_topic_document.pt')
     filename = "search.kml"
 
@@ -331,11 +355,6 @@ class PleiadesSearchDocument(TopicDocument):
         self.context = context
         self.request = request
         self.dc = SearchDCProvider()
-
-    @property
-    def features(self):
-        for brain in self.context.queryCatalog():
-            yield PleiadesBrainPlacemark(brain, self.request)
 
 
 class PleiadesStylesProvider(object):

@@ -55,16 +55,16 @@
     <Placemark>
       <name tal:content="pm/name">TITLE</name>
       <atom:link tal:attributes="href pm/alternate_link"/>
-      <address tal:content="pm/alternate_link"/>
+      <address tal:content="pm/alternate_link">ADDRESS</address>
       <atom:author>
         <atom:name tal:content="pm/context/Creator">NAME</atom:name>
-        <atom:link tal:attributes="href pm/alternate_link"/>
+        <atom:uri tal:content="pm/alternate_link">URI</atom:uri>
       </atom:author>
-      <Snippet tal:content="string:${pm/featureTypes}; ${pm/timePeriods}">X</Snippet>
+      <Snippet tal:content="string:${pm/featureTypes}; ${pm/timePeriods}">X</Snippet> 
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm/description">ITEM DESCRIPTION</em></p>
-          <p>Tags: <span tal:content="python:','.join(pm.context.Subject)">TAGS</span></p>
+          <p>Tags: <span tal:content="python:', '.join(pm.context.Subject)">TAGS</span></p>
           <p>Feature types: <span tal:content="pm/featureTypes">TYPES</span></p>
           <p>Time periods: <span tal:content="pm/timePeriods">PERIODS</span></p>
         <span tal:replace="structure string:]]&gt;" />
