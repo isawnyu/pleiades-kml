@@ -311,13 +311,13 @@ class PleiadesTopicDocument(TopicDocument):
     @property
     def features(self):
         # Pass extra location precision param through the request
-        request = getattr(self, 'REQUEST', {})
-        request['location_precision'] = 'precise'
+        request = self.request.form.copy()
+        request['location_precision'] = ['precise']
         for brain in self.context.queryCatalog(request):
             yield PleiadesBrainPlacemark(brain, self.request)
         geoms = {}
         objects = {}
-        request['location_precision'] = 'rough'
+        request['location_precision'] = ['rough']
         for brain in self.context.queryCatalog(request):
             item = PleiadesBrainPlacemark(brain, self.request)
             geo = brain.zgeo_geometry

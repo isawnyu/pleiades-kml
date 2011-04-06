@@ -16,17 +16,18 @@
     
     <Style id="aggregateStyle">
       <IconStyle>
+        <color>ff3366cc</color>
         <scale>0.7</scale>
         <Icon>
-          <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+          <href>http://atlantides.org/images/justice-brown.png</href>
         </Icon>
       </IconStyle>
       <LineStyle>
-        <color>ffff0000</color>
+        <color>ff3366cc</color>
         <width>2</width>
       </LineStyle>
       <PolyStyle>
-        <color>33ff0000</color>
+        <color>333366cc</color>
       </PolyStyle>
       <BalloonStyle>
         <text><span tal:replace="structure string:&lt;![CDATA[" />
