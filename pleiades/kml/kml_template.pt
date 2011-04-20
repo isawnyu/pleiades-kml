@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml
+  xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="plone"
+  >
+  
+  <metal:macro define-macro="doc">
+  
+  <tal:block
+    condition="python:request and request.response.setHeader(
+        'Content-Type', 'application/vnd.google-earth.kml+xml;charset=utf-8')"
+    />
+  <tal:block
+    condition="python:request and request.response.setHeader(
+    'Content-Disposition', 'filename=%s' % view.filename)"
+    />
+
+  <Document>
+
+    <metal:slot metal:define-slot="document_styles">
+      <!-- KML styles -->
+    </metal:slot>
+
+    <name tal:content="view/name">TITLE</name>
+    <visibility>1</visibility>
+    <open>0</open>
+
+    <metal:slot metal:define-slot="document_contents">
+      <!-- Placemarks -->
+    </metal:slot>
+
+  </Document>
+  
+  </metal:macro>
+
+</kml>
