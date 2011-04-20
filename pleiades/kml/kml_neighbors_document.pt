@@ -34,7 +34,7 @@
               pm_tags pm/tags;
               pm_ftypes pm/featureTypes;
               pm_tperiods pm/timePeriods;
-              pm_styleUrl string:#coreStyle;"
+              pm_styleUrl string:#peripheralStyle;"
       >
       <metal:m metal:use-macro="kml_macros/placemark">
       <metal:s metal:fill-slot="placemark_content">

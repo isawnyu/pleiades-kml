@@ -11,5 +11,5 @@ if __name__ == '__main__':
         context=context,
         request=context.REQUEST,
         macros={'kml_template': main_macros, 'kml_macros': kml_macros})
-    sys.stdout.write(doc)
+    sys.stdout.write(doc.encode('utf-8'))
     

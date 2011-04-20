@@ -4,6 +4,7 @@ import os
 
 from Products.CMFCore.utils import getToolByName
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+from ZTUtils import make_query
 
 from pleiades.kml.browser import AggregationPlacemark, PleiadesBrainPlacemark
 from pleiades.kml.browser import SearchDCProvider, W
@@ -22,9 +23,12 @@ class AggregationDumpPlacemark(AggregationPlacemark):
 
     @property
     def alternate_link(self):
-        query = '&'.join(
-            "getId:list=%s" % ob.context.getId for ob in self.objects)
-        return "http://pleiades.stoa.org/search?location_precision=rough&%s" % query
+        query = {
+            'location_precision': ['rough'],
+            'path': {'query': [ob.context.getPath() for ob in self.objects],
+                     'depth': 0}
+            }
+        return "http://pleiades.stoa.org/search?%s" % make_query(query)
 
 
 class AllPlacesDocument:
@@ -35,9 +39,6 @@ class AllPlacesDocument:
         self.filename = "all.kml"
         self.name = "Pleiades KML"
     
-    #def __call__(self):
-    #    return self.template().encode('utf-8')
-
     @property
     def features(self):
         catalog = getToolByName(self.context, 'portal_catalog')

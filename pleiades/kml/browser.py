@@ -16,6 +16,7 @@ from zope.contentprovider.interfaces import IContentProvider
 from zope.interface import implements, Interface
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.dublincore.interfaces import ICMFDublinCore
+from ZTUtils import make_query
 
 from Products.PleiadesEntity.content.interfaces import ILocation
 from pleiades.capgrids import Grid
@@ -289,9 +290,12 @@ class AggregationPlacemark:
     @property
     def alternate_link(self):
         portal_url = getToolByName(self.context, 'portal_url')()
-        query = '&'.join(
-            "getId:list=%s" % ob.context.getId for ob in self.objects)
-        return "%s/search?location_precision=rough&%s" % (portal_url, query)
+        query = {
+            'location_precision': ['rough'],
+            'path': {'query': [ob.context.getPath() for ob in self.objects],
+                     'depth': 0}
+            }
+        return "%s/search?%s" % (portal_url, make_query(query))
 
     @property
     def hasPoint(self):
