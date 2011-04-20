@@ -1,146 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kml
   xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="plone"
+  tal:define="kml_macros context/@@kml_macros/macros"
   >
-  <tal:b 
-    condition="python:request and request.response.setHeader(
-		'Content-Type', 'application/vnd.google-earth.kml+xml;charset=utf-8')" 
-    />
-  <tal:b 
-    condition="python:request and request.response.setHeader(
-    'Content-Disposition', 'filename=%s.kml' % view.context.getId())" 
-    />
+
+  <metal:m metal:use-macro="context/@@kml_template/macros/doc">
+  
   <Document>
-    
-    <Style id="defaultStyle">
-      <IconStyle>
-        <scale>0.7</scale>
-        <Icon>
-          <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
-        </Icon>
-      </IconStyle>
-      <LineStyle>
-        <color>ffff0000</color>
-        <width>2</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>33ff0000</color>
-      </PolyStyle>
-      <BalloonStyle>
-        <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <h4>$[name]</h4>
-          $[description]
-        <span tal:replace="structure string:]]&gt;"/></text>
-      </BalloonStyle>
-    </Style>
-    
-    <name tal:content="view/name">TITLE</name>
-    <visibility>1</visibility>
-    <open>0</open>
-    <tal:features tal:repeat="feature view/features">
-    <Folder tal:condition="exists:feature/features">
-      <name tal:content="feature/name">TITLE</name>
-      <description tal:content="feature/description">DESCRIPTION</description>
-      <Placemark tal:repeat="placemark feature/features">
-        <name tal:content="placemark/name">TITLE</name>
+
+  <metal:s metal:fill-slot="document_styles">
+    <metal:m metal:use-macro="kml_macros/core_style"/>
+  </metal:s>
+
+  <metal:s metal:fill-slot="document_contents">
+
+  <Folder tal:repeat="folder view/features">
+    <name tal:content="folder/name">TITLE</name>
+    <Snippet tal:content="folder/snippet">SNIPPET</Snippet>
+    <description>
+      <span tal:replace="structure string:&lt;![CDATA[" />
+        <p><em tal:content="folder/description">ITEM DESCRIPTION</em></p>
+        <ul><!-- Attributes -->
+        <li>Tags: <span tal:content="folder/tags">TAGS</span></li>
+        <li>Feature types: 
+            <span tal:content="folder/featureTypes">TYPE</span></li>
+        <li>Time periods: 
+            <span tal:content="folder/timePeriods">PERIOD</span></li>
+        </ul>
+      <span tal:replace="structure string:]]&gt;" />
+    </description>
+    <styleUrl>#coreStyle</styleUrl>
+
+  <tal:placemarks tal:repeat="pm folder/features">
+
+    <tal:pm_defs
+      define="pm_name pm/name;
+              pm_alternate_link pm/alternate_link;
+              pm_author pm/author;
+              pm_snippet pm/snippet;
+              pm_description pm/description;
+              pm_tags pm/tags;
+              pm_ftypes pm/featureTypes;
+              pm_tperiods pm/timePeriods;
+              pm_styleUrl string:#coreStyle;"
+      >
+      <metal:m metal:use-macro="kml_macros/placemark">
+      <metal:s metal:fill-slot="placemark_content">
+
         <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
-          <div>
-            <p>URL:
-              <a 
-                tal:attributes="href placemark/alternate_link" 
-                tal:content="placemark/alternate_link"
-                rel="alternate"
-                >ITEM URL
-              </a> 
-              <a tal:condition="placemark/edit_link|nothing"
-                tal:attributes="href placemark/edit_link"
-                rel="edit"
-                >edit</a>
-            </p>
-            <p tal:content="placemark/description">ITEM DESCRIPTION</p>
-            <p>Attested: <span tal:content="placemark/timePeriods">A, B</span></p>
-          </div>
+          <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
+          <ul><!-- Attributes -->
+          <li>Tags: <span tal:content="pm_tags">TAGS</span></li>
+          <li>Feature types: <span tal:content="pm_ftypes">TYPES</span></li>
+          <li>Time periods: <span tal:content="pm_tperiods">PERIODS</span></li>
+          </ul>
+          <p tal:condition="python:pm.geom.precision == 'rough'">
+          <em>This object is within or partially overlaps the placemark shown.</em>
+          </p>
         <span tal:replace="structure string:]]&gt;" />
         </description>
-        <styleUrl>#defaultStyle</styleUrl>
-        <Point tal:condition="placemark/hasPoint">
-          <coordinates tal:content="placemark/coords_kml">
-            COORDINATE LIST
-          </coordinates>
-        </Point>
-        <LineString tal:condition="placemark/hasLineString">
-          <coordinates tal:content="placemark/coords_kml">
-            COORDINATE LIST
-          </coordinates>
-        </LineString>
-        <Polygon tal:condition="placemark/hasPolygon">
-          <outerBoundaryIs>
-            <LinearRing>
-              <coordinates tal:content="python:placemark.coords_kml[0]">
-                COORDINATE LIST
-              </coordinates>
-            </LinearRing>
-          </outerBoundaryIs>
-        </Polygon>
-      </Placemark>
-    </Folder>
-    <Placemark tal:condition="not:exists:feature/features">
-      <name tal:content="feature/name">TITLE</name>
-      <description>
-        <span tal:replace="structure string:&lt;![CDATA[" />
-          <div>
-            <p>URL:
-              <a 
-                tal:attributes="href placemark/alternate_link" 
-                tal:content="placemark/alternate_link"
-                >ITEM URL
-              </a> 
-              <a tal:condition="placemark/edit_link|nothing"
-                tal:attributes="href placemark/edit_link"
-                rel="edit"
-                >edit</a>
-            </p>
-            <p tal:content="placemark/description">ITEM DESCRIPTION</p>
-            <p>Attested: <span tal:content="placemark/timePeriods">A, B</span></p>
-          </div>
-        <span tal:replace="structure string:]]&gt;" />
-      </description>
-      <styleUrl>#defaultStyle</styleUrl>
-      <Point tal:condition="feature/hasPoint">
-        <coordinates tal:content="feature/coords_kml">
-          COORDINATE LIST
-        </coordinates>
-      </Point>
-      <LineString tal:condition="feature/hasLineString">
-        <coordinates tal:content="feature/coords_kml">
-          COORDINATE LIST
-        </coordinates>
-      </LineString>
-      <Polygon tal:condition="feature/hasPolygon">
-        <outerBoundaryIs>
-          <LinearRing>
-            <coordinates tal:content="python:feature.coords_kml[0]">
-              COORDINATE LIST
-            </coordinates>
-          </LinearRing>
-        </outerBoundaryIs>
-      </Polygon>
-    </Placemark>
-    </tal:features>
 
-    <!-- Neighbors -->
-    <!-- Folder >
-      <name>The neighborhood</name>
-      <description>Places within some kilometers</description>
-      <visibility>1</visibility>
-      <NetworkLink>
-        <Link>
-          <href tal:content="view/neighbors_kml">HREF</href>
-        </Link>
-      </NetworkLink>
-    </Folder -->
+      </metal:s>
+      </metal:m>
+    </tal:pm_defs>
+    </tal:placemarks>
+    </Folder>
+    </metal:s>
 
   </Document>
+
+  </metal:m>
+
 </kml>

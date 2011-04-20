@@ -37,12 +37,14 @@ def coords_to_kml(geom):
     else:
         return to_string(geom['coordinates'])
 
+
 class W(object):
     # spatial 'within' wrapper for use as a sorting key
     def __init__(self, o):
         self.o = o
     def __lt__(self, other):
         return asShape(self.o.geom).within(asShape(other.o.geom))
+
 
 class GridPlacemark(Placemark):
     
@@ -58,48 +60,77 @@ class GridPlacemark(Placemark):
 class PleiadesPlacemark(Placemark):
 
     @property
+    def timePeriods(self):
+        return ", ".join(
+            x.capitalize() for x in self.context.getTimePeriods()) or "Unattested"
+
+    @property
+    def featureTypes(self):
+        return ", ".join(
+            x.capitalize() for x in self.context.getFeatureType()) or "Unattested"
+
+    @property
+    def tags(self):
+        return ", ".join(self.context.Subject()) or "None"
+            
+    @property
+    def snippet(self):
+        return "%s; %s" % (self.featureTypes, self.timePeriods)
+
+    @property
     def description(self):
         return self.context.Description()
 
     @property
-    def timePeriods(self):
-        return ', '.join(
-            [x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
+    def author(self):
+        return {'name': self.context.Creator(), 'uri': self.alternate_link}
 
 
 class PleiadesBrainPlacemark(BrainPlacemark):
     
     @property
     def timePeriods(self):
-        tp = getattr(self.context, 'getTimePeriods')
-        if tp is None:
-            retval = ''
+        tp = getattr(self.context, 'getTimePeriods', [])
+        if callable(tp):
+            values = tp()
         else:
-            if callable(tp):
-                values = tp()
-            else:
-                values = tp
-            try:
-                retval = ', '.join([v.capitalize() for v in values])
-            except TypeError:
-                retval = ''
-        return retval
+            values = tp
+        try:
+            retval = ", ".join(v.capitalize() for v in values) or None
+        except TypeError, e:
+            log.warn("Time period formatting error: %s", str(e))
+            retval = None
+        return retval or "Unattested"
 
     @property
     def featureTypes(self):
-        ft = getattr(self.context, 'getFeatureType')
-        if ft is None:
-            retval = ''
+        ft = getattr(self.context, 'getFeatureType', [])
+        if callable(ft):
+            values = ft()
         else:
-            if callable(ft):
-                values = ft()
-            else:
-                values = ft
-            try:
-                retval = ', '.join([v.capitalize() for v in values])
-            except TypeError:
-                retval = ''
-        return retval
+            values = ft
+        try:
+            retval = ", ".join(v.capitalize() for v in values) or None
+        except TypeError, e:
+            log.warn("Feature type formatting error: %s", str(e))
+            retval = None
+        return retval or "Unattested"
+
+    @property
+    def tags(self):
+        return ", ".join(self.context.Subject) or "None"
+
+    @property
+    def snippet(self):
+        return "%s; %s" % (self.featureTypes, self.timePeriods)
+
+    @property
+    def description(self):
+        return self.context.Description
+
+    @property
+    def author(self):
+        return {'name': self.context.Creator, 'uri': self.alternate_link}
 
     @property
     def altLocation(self):
@@ -111,15 +142,30 @@ class PleiadesBrainPlacemark(BrainPlacemark):
 
 
 class PlaceFolder(Folder):
-    
-    @property
-    def description(self):
-        return self.context.Description()
 
     @property
     def timePeriods(self):
-        return ', '.join(
-            [x.capitalize() for x in self.context.getTimePeriods()]) or 'None'
+        return ", ".join(
+            x.capitalize() for x in self.context.getTimePeriods()
+            ) or "Unattested"
+
+    @property
+    def featureTypes(self):
+        return ", ".join(
+            x.capitalize() for x in self.context.getFeatureType()
+            ) or "Unattested"
+
+    @property
+    def tags(self):
+        return ", ".join(self.context.Subject()) or "None"
+
+    @property
+    def snippet(self):
+        return "%s; %s" % (self.featureTypes, self.timePeriods)
+
+    @property
+    def description(self):
+        return self.context.Description()
 
     @property
     def features(self):
@@ -132,6 +178,11 @@ class PlaceFolder(Folder):
 class PlaceDocument(Document):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_document.pt')
+    disposition_tmpl = "%s.kml"
+
+    @property
+    def filename(self):
+        return self.disposition_tmpl % self.context.getId()
     
     @property
     def features(self):
@@ -161,7 +212,6 @@ class PlaceNeighborhoodDocument(PlaceDocument):
 
 class PlaceNeighborsDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_neighbors_document.pt')
-    disposition_tmpl = "%s-neighbors.kml"
 
     @property
     def name(self):
@@ -189,6 +239,7 @@ class PlaceNeighborsDocument(TopicDocument):
                 # skip self
                 continue
             yield PleiadesBrainPlacemark(brain, self.request)
+
 
 class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
     disposition_tmpl = "%s-p-neighbors.kml"
@@ -223,9 +274,17 @@ class AggregationPlacemark:
         return "Aggregation of roughly located objects"
 
     @property
+    def snippet(self):
+        return "%s objects" % len(self.objects)
+
+    @property
     def description(self):
         box = asShape(self.geom).bounds
         return "%s degree by %s degree cell" % (box[2]-box[0], box[3]-box[1])
+
+    @property
+    def author(self):
+        return {'name': "Pleiades Site Search", 'uri': self.alternate_link}
 
     @property
     def alternate_link(self):
@@ -252,7 +311,6 @@ class AggregationPlacemark:
 
 
 class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
-    template = ViewPageTemplateFile('kml_rough_neighbors_document.pt')
     disposition_tmpl = "%s-r-neighbors.kml"
 
     @property
@@ -355,19 +413,3 @@ class PleiadesSearchDocument(PleiadesTopicDocument):
         self.context = context
         self.request = request
         self.dc = SearchDCProvider()
-
-
-class PleiadesStylesProvider(object):
-    implements(IContentProvider)
-    adapts(Interface, IDefaultBrowserLayer, PlaceDocument)
-    
-    template = ViewPageTemplateFile('kml_styles.pt')
-    
-    def __init__(self, context, request, view):
-        self.context, self.request, self.view = context, request, view
-    
-    def update(self):
-        pass
-    
-    def render(self):
-        return self.template().encode('utf-8')

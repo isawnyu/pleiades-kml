@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml
+  xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="plone"
+  >
+
+  <Document>
+
+    <metal:macro metal:define-macro="core_style">
+    
+    <Style id="coreStyle">
+      <IconStyle>
+        <scale>0.7</scale>
+        <Icon>
+          <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+        </Icon>
+      </IconStyle>
+      <LineStyle>
+        <color>ffff0000</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>33ff0000</color>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><span tal:replace="structure string:&lt;![CDATA[" />
+          <div><table cellspacing="5">
+            <tr>
+              <td><a href="http://pleiades.stoa.org"><img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/></a></td>
+              <td class="text-align: top">
+              <h1 style="color: #333; font-family: Verdana, sans-serif">$[name]</h1>
+              <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">$[address]</a></p>
+              </td>
+            </tr>
+          </table></div>
+          <div style="color: #333; margin-left: 1em">
+            $[description]
+            <p>
+              <a style="color: #2575AD; text-decoration: underline" href="$[address]">Details</a> 
+              (<a style="color: #2575AD; text-decoration: underline" href="$[address]/edit">Edit</a>)
+            </p>
+          </div>
+        <span tal:replace="structure string:]]&gt;"/></text>
+      </BalloonStyle>
+    </Style>
+    
+    </metal:macro>
+
+    <metal:macro metal:define-macro="peripheral_style">
+    
+    <Style id="peripheralStyle">
+      <IconStyle>
+        <color>ff3366cc</color>
+        <scale>0.7</scale>
+        <Icon>
+          <href>http://atlantides.org/images/justice-brown.png</href>
+        </Icon>
+      </IconStyle>
+      <LineStyle>
+        <color>ff3366cc</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>333366cc</color>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><span tal:replace="structure string:&lt;![CDATA[" />
+          <div><table cellspacing="5">
+            <tr>
+              <td><a href="http://pleiades.stoa.org">
+              <img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/>
+              </a></td>
+              <td class="text-align: top">
+              <h3 style="color: #333; font-family: Verdana, sans-serif">$[name]</h3>
+              </td>
+            </tr>
+          </table></div>
+          <div style="color: #333; margin-left: 1em">
+            $[description]
+            <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">Permalink</a></p>
+          </div>
+        <span tal:replace="structure string:]]&gt;"/></text>
+      </BalloonStyle>
+    </Style>
+    
+    </metal:macro>
+
+    <metal:macro metal:define-macro="placemark">
+
+    <Placemark>
+      <name tal:content="pm_name">NAME</name>
+      <atom:link tal:attributes="href pm_alternate_link"/>
+      <address tal:content="pm_alternate_link"/>
+
+      <atom:author>
+        <atom:name tal:content="pm_author/name">NAME</atom:name>
+        <atom:uri tal:content="pm_author/uri">URI</atom:uri>
+      </atom:author>
+      
+      <Snippet tal:content="pm_snippet">SNIPPET</Snippet>
+
+      <metal:slot metal:define-slot="placemark_content">
+        <!-- For the popup bubble -->
+      </metal:slot>
+
+      <styleUrl tal:content="pm_styleUrl">STYLE_URL</styleUrl>
+
+      <Point tal:condition="pm/hasPoint">
+        <coordinates tal:content="pm/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </Point>
+
+      <LineString tal:condition="pm/hasLineString">
+        <coordinates tal:content="pm/coords_kml">
+          COORDINATE LIST
+        </coordinates>
+      </LineString>
+      
+      <Polygon tal:condition="pm/hasPolygon">
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates tal:content="python:pm.coords_kml[0]">
+              COORDINATE LIST
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    </metal:macro>
+
+  </Document>
+</kml>

@@ -36,6 +36,20 @@
     />
 
   <browser:page
+    for="*"
+    template="kml_template.pt"
+    name="kml_template"
+    permission="zope2.View"
+    />
+
+  <browser:page
+    for="*"
+    template="kml_macros.pt"
+    name="kml_macros"
+    permission="zope2.View"
+    />
+
+  <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"
     name="kml"
     class=".browser.PlaceDocument"
@@ -49,12 +63,12 @@
     permission="zope2.View"
     />
 
-  <browser:page
+  <!--browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"
     name="neighbors-kml"
     class=".browser.PlaceNeighborsDocument"
     permission="zope2.View"
-    />
+    /-->
 
   <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"
@@ -84,12 +98,12 @@
     permission="zope2.View"
     />
 
-  <browser:page
+  <!--browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlaceContainer"
     name="kml"
     class=".browser.PleiadesDocument"
     permission="zope2.View"
-    />
+    /-->
 
   <browser:page
     for="*"
