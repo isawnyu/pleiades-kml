@@ -6,10 +6,11 @@
   xmlns:metal="http://xml.zope.org/namespaces/metal"
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
   i18n:domain="plone"
-  tal:define="kml_macros context/@@kml_macros/macros"
+  tal:define="kml_macros context/@@kml_macros/macros | macros/kml_macros/macros;
+              main_macros context/@@kml_template/macros | macros/kml_template/macros"
   >
 
-  <metal:m metal:use-macro="context/@@kml_template/macros/doc">
+  <metal:m metal:use-macro="main_macros/doc">
   
   <Document>
 

@@ -1,14 +1,12 @@
 
 import logging
 import os
-#from sys import stdin, stdout
 
 from Products.CMFCore.utils import getToolByName
-#from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.app.pagetemplate.viewpagetemplatefile import ViewPageTemplateFile
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
-from pleiades.kml.browser import AggregationPlacemark
-from pleiades.kml.browser import PleiadesBrainPlacemark, PleiadesSearchDocument
+from pleiades.kml.browser import AggregationPlacemark, PleiadesBrainPlacemark
+from pleiades.kml.browser import SearchDCProvider, W
 
 log = logging.getLogger('pleiades.kml')
 
@@ -29,12 +27,16 @@ class AggregationDumpPlacemark(AggregationPlacemark):
         return "http://pleiades.stoa.org/search?location_precision=rough&%s" % query
 
 
-class AllPlacesDocument(PleiadesSearchDocument):
-    template = ViewPageTemplateFile("kml_topic_document.pt")
-    filename = "all.kml"
+class AllPlacesDocument:
 
     def __init__(self, context):
         self.context = context
+        self.dc = SearchDCProvider()
+        self.filename = "all.kml"
+        self.name = "Pleiades KML"
+    
+    #def __call__(self):
+    #    return self.template().encode('utf-8')
 
     @property
     def features(self):
@@ -45,7 +47,7 @@ class AllPlacesDocument(PleiadesSearchDocument):
             'review_state': ['published']
             }
         for brain in catalog(query):
-            yield PleiadesDumpPlacemark(brain, self.request)
+            yield PleiadesDumpPlacemark(brain, None)
         geoms = {}
         objects = {}
         query = {
@@ -54,7 +56,7 @@ class AllPlacesDocument(PleiadesSearchDocument):
             'review_state': ['published']
             }
         for brain in catalog(query):
-            item = PleiadesDumpPlacemark(brain, self.request)
+            item = PleiadesDumpPlacemark(brain, None)
             geo = brain.zgeo_geometry
             if geo and geo.has_key('type') and geo.has_key('coordinates'):
                 key = repr(geo)
@@ -73,14 +75,12 @@ class AllPlacesDocument(PleiadesSearchDocument):
             yield placemark
 
 
-if __name__ == '__main__':
-    site = app['plone']
+class DumpTemplateFile(PageTemplateFile):
+    def pt_getContext(self, args=(), options={}, **kw):
+        rval = PageTemplateFile.pt_getContext(self, args=args)
+        options.update(rval)
+        return options
 
-    #context = makerequest(site)
-    #import pdb; pdb.set_trace()
-    #context.REQUEST.form.update(
-    #    {'portal_type': ['Place'], 'review_state': ['published']})
-    view = AllPlacesDocument(site)
-    import pdb; pdb.set_trace() #, context.REQUEST)
-    sys.stdout.write(view())
-    
+pt = DumpTemplateFile("kml_topic_document.pt")
+kml_macros = PageTemplateFile("kml_macros.pt")
+main_macros = PageTemplateFile("kml_template.pt")

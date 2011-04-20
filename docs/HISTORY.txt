@@ -3,4 +3,5 @@ Changelog for pleiades.kml
 0.9 (2011-04-19)
 ----------------
 - Refactored templates, style and placemark macros with description slots.
+- Use these templates in a KML dump script.
 
