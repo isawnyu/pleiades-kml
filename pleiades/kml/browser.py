@@ -1,7 +1,7 @@
 import logging
 from shapely.geometry import asShape
 
-from plone.memoize.view import memoize
+from plone.memoize.instance import memoize
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -13,7 +13,8 @@ from zgeo.geographer.interfaces import IGeoreferenced
 from zope.component import adapts
 from zope.publisher.interfaces import browser
 from zope.contentprovider.interfaces import IContentProvider
-from zope.interface import implements, Interface
+from zope.interface import Attribute, implements, Interface
+from zope.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.dublincore.interfaces import ICMFDublinCore
 from ZTUtils import make_query
@@ -417,3 +418,72 @@ class PleiadesSearchDocument(PleiadesTopicDocument):
         self.context = context
         self.request = request
         self.dc = SearchDCProvider()
+
+
+class IKMLNeighborhood(Interface):
+    def p_link():
+        """Query string to search for precisely located neighbors"""
+    def r_link():
+        """Query string to search for aggregations of roughly located neighbors"""
+
+class KMLNeighborhood(BrowserView):
+    implements(IKMLNeighborhood)
+
+    @memoize
+    def geo(self):
+        log.info("Getting georeferencing")
+        try:
+            g = IGeoreferenced(self.context)
+        except NotLocatedError:
+            return None
+        return g
+
+    def __call__(self):
+        return "Nothing to see here"
+
+    def _munge(self, where):
+        u = {}
+        try:
+            u['predicate'] = where.get('range')
+            if u['predicate'] == 'intersection':
+                coords = where.get('query')
+            else:
+                coords = where.get('query')[0]
+                u['tolerance'] = where.get('query')[1]/1000.0
+            u['lowerLeft'] = "%f,%f" % coords[0:2]
+            if len(coords) == 4:
+                u['upperRight'] = "%f,%f" % coords[2:4]
+        except:
+            log.warning("Failed to munge %s" % where)
+        return u
+
+    def p_link(self):
+        log.info("Getting p_qs query string")
+        g = self.geo()
+        if g is None:
+            return None
+        view = PlacePreciseNeighborsDocument(self.context, self.request)
+        query = view.criteria(g)
+        where = query.pop('where')
+        query.update(self._munge(where))
+        return """
+        <link rel="nofollow alternate p-neighbors"
+            type="application/vnd.google-earth.kml+xml"
+            href="%s/search_kml?%s"/>
+        """ % (getToolByName(self.context, 'portal_url')(), make_query(query))
+
+    def r_link(self):
+        log.info("Getting r_qs query string")
+        g = self.geo()
+        if g is None:
+            return None
+        view = PlaceRoughNeighborsDocument(self.context, self.request)
+        query = view.criteria(g)
+        where = query.pop('where')
+        query.update(self._munge(where))
+        return """
+        <link rel="nofollow alternate r-neighbors"
+            type="application/vnd.google-earth.kml+xml"
+            href="%s/search_kml?%s"/>
+        """ % (getToolByName(self.context, 'portal_url')(), make_query(query))
+

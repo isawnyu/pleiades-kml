@@ -112,5 +112,12 @@
     permission="zope2.View"
     />
 
+  <browser:view
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="neighborhood"
+    class=".browser.KMLNeighborhood"
+    permission="zope2.View"
+    allowed_interface=".browser.IKMLNeighborhood"
+    />
 
 </configure>
