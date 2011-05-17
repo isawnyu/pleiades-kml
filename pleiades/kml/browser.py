@@ -372,16 +372,21 @@ class PleiadesTopicDocument(TopicDocument):
     filename = "collection.kml"
 
     @property
-    def features(self):
+    def features(self, skip=None):
+        skipIds = skip or self.request.form.get('skipId') or []
         # Pass extra location precision param through the request
         request = self.request.form.copy()
         request['location_precision'] = ['precise']
         for brain in self.context.queryCatalog(request):
+            if brain.getId in skipIds:
+                continue
             yield PleiadesBrainPlacemark(brain, self.request)
         geoms = {}
         objects = {}
         request['location_precision'] = ['rough']
         for brain in self.context.queryCatalog(request):
+            if brain.getId in skipIds:
+                continue
             item = PleiadesBrainPlacemark(brain, self.request)
             geo = brain.zgeo_geometry
             if geo and geo.has_key('type') and geo.has_key('coordinates'):
@@ -469,8 +474,11 @@ class KMLNeighborhood(BrowserView):
         return """
         <link rel="nofollow alternate p-neighbors"
             type="application/vnd.google-earth.kml+xml"
-            href="%s/search_kml?%s&style=peripheral"/>
-        """ % (getToolByName(self.context, 'portal_url')(), make_query(query))
+            href="%s/search_kml?%s&skipId:list=%s&style=peripheral"/>
+        """ % (
+            getToolByName(self.context, 'portal_url')(), 
+            make_query(query),
+            self.context.getId())
 
     def r_link(self):
         log.info("Getting r_qs query string")
@@ -484,6 +492,9 @@ class KMLNeighborhood(BrowserView):
         return """
         <link rel="nofollow alternate r-neighbors"
             type="application/vnd.google-earth.kml+xml"
-            href="%s/search_kml?%s&style=peripheral"/>
-        """ % (getToolByName(self.context, 'portal_url')(), make_query(query))
+            href="%s/search_kml?%s&skipId:list=%s&style=peripheral&"/>
+        """ % (
+            getToolByName(self.context, 'portal_url')(), 
+            make_query(query),
+            self.context.getId())
 
