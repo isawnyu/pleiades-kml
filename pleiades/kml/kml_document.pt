@@ -60,7 +60,7 @@
           <li>Feature types: <span tal:content="pm_ftypes">TYPES</span></li>
           <li>Time periods: <span tal:content="pm_tperiods">PERIODS</span></li>
           </ul>
-          <p tal:condition="python:pm.geom.precision == 'rough'">
+          <p tal:condition="python:path('pm/geom/precision|nothing') == 'rough'">
           <em>This object is within or partially overlaps the placemark shown.</em>
           </p>
         <span tal:replace="structure string:]]&gt;" />

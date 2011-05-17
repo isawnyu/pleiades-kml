@@ -469,7 +469,7 @@ class KMLNeighborhood(BrowserView):
         return """
         <link rel="nofollow alternate p-neighbors"
             type="application/vnd.google-earth.kml+xml"
-            href="%s/search_kml?%s"/>
+            href="%s/search_kml?%s&style=peripheral"/>
         """ % (getToolByName(self.context, 'portal_url')(), make_query(query))
 
     def r_link(self):
@@ -484,6 +484,6 @@ class KMLNeighborhood(BrowserView):
         return """
         <link rel="nofollow alternate r-neighbors"
             type="application/vnd.google-earth.kml+xml"
-            href="%s/search_kml?%s"/>
+            href="%s/search_kml?%s&style=peripheral"/>
         """ % (getToolByName(self.context, 'portal_url')(), make_query(query))
 

@@ -35,7 +35,8 @@
               pm_tags pm/tags;
               pm_ftypes pm/featureTypes;
               pm_tperiods pm/timePeriods;
-              pm_styleUrl string:#coreStyle;"
+              styleName request/form/style | string:core;
+              pm_styleUrl string:#${styleName}Style;"
       >
       <metal:m metal:use-macro="kml_macros/placemark">
       <metal:s metal:fill-slot="placemark_content">
@@ -63,7 +64,8 @@
               pm_author pm/author;
               pm_snippet pm/snippet;
               pm_description pm/description;
-              pm_styleUrl string:#peripheralStyle;
+              styleName request/form/style | string:peripheral;
+              pm_styleUrl string:#${styleName}Style;
               objects pm/objects;
               numObjects python:len(objects)"
       >
