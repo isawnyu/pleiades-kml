@@ -379,10 +379,10 @@ class PleiadesTopicDocument(TopicDocument):
             get_precise = True
             get_rough = True
         else:
-            if type(precision_param) == type("s"):
-                precision_param = [precision_param]
-            get_precise = bool('precise' in precision_param)
-            get_rough = bool('rough' in precision_param)
+            qv = precision_param.get('query', precision_param)
+            get_precise = 'precise' in qv
+            get_rough = 'rough' in qv
+        request = self.request.form.copy()
         if get_precise:
             request['location_precision'] = ['precise']
             for brain in self.context.queryCatalog(request):
