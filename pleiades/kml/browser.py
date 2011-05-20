@@ -374,36 +374,47 @@ class PleiadesTopicDocument(TopicDocument):
     @property
     def features(self, skip=None):
         skipIds = skip or self.request.form.get('skipId') or []
-        # Pass extra location precision param through the request
-        request = self.request.form.copy()
-        request['location_precision'] = ['precise']
-        for brain in self.context.queryCatalog(request):
-            if brain.getId in skipIds:
-                continue
-            yield PleiadesBrainPlacemark(brain, self.request)
-        geoms = {}
-        objects = {}
-        request['location_precision'] = ['rough']
-        for brain in self.context.queryCatalog(request):
-            if brain.getId in skipIds:
-                continue
-            item = PleiadesBrainPlacemark(brain, self.request)
-            geo = brain.zgeo_geometry
-            if geo and geo.has_key('type') and geo.has_key('coordinates'):
-                key = repr(geo)
-                if not key in geoms:
-                    geoms[key] = geo
-                if key in objects:
-                    objects[key].append(item)
-                else:
-                    objects[key] = [item]
-        placemarks = sorted(
-            [AggregationPlacemark(
-                self.context, geoms[key], val) for key, val in objects.items()],
+        precision_param = self.request.form.get('location_precision')
+        if not precision_param:
+            get_precise = True
+            get_rough = True
+        else:
+            if type(precision_param) == type("s"):
+                precision_param = [precision_param]
+            get_precise = bool('precise' in precision_param)
+            get_rough = bool('rough' in precision_param)
+        if get_precise:
+            request['location_precision'] = ['precise']
+            for brain in self.context.queryCatalog(request):
+                if brain.getId in skipIds:
+                    continue
+                yield PleiadesBrainPlacemark(brain, self.request)
+        if get_rough:
+            geoms = {}
+            objects = {}
+            request['location_precision'] = ['rough']
+            for brain in self.context.queryCatalog(request):
+                if brain.getId in skipIds:
+                    continue
+                item = PleiadesBrainPlacemark(brain, self.request)
+                geo = brain.zgeo_geometry
+                if geo and geo.has_key('type') and geo.has_key('coordinates'):
+                    key = repr(geo)
+                    if not key in geoms:
+                        geoms[key] = geo
+                    if key in objects:
+                        objects[key].append(item)
+                    else:
+                        objects[key] = [item]
+            placemarks = sorted(
+                [AggregationPlacemark(
+                    self.context, 
+                    geoms[key], 
+                    val) for key, val in objects.items()],
                 key=W,
                 reverse=False)
-        for placemark in placemarks:
-            yield placemark
+            for placemark in placemarks:
+                yield placemark
 
 
 class SearchDCProvider:
