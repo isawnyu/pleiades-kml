@@ -136,7 +136,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
 
     @property
     def altLocation(self):
-        return self.context.getModernLocation or self.context.Description.listrip('An ancient place, cited: ')
+        return self.context.getModernLocation or self.context.Description.lstrip('An ancient place, cited: ')
 
     @property
     def alternate_link(self):
