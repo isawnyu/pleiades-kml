@@ -379,7 +379,7 @@ class PleiadesTopicDocument(TopicDocument):
             get_precise = True
             get_rough = True
         else:
-            qv = precision_param.get('query', precision_param)
+            qv = self.request.form.get('query', precision_param)
             get_precise = 'precise' in qv
             get_rough = 'rough' in qv
         request = self.request.form.copy()
