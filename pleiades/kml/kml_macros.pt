@@ -96,6 +96,11 @@
       <atom:link tal:attributes="href pm_alternate_link"/>
       <address tal:content="pm_alternate_link"/>
 
+      <TimeSpan tal:condition="pm_timeSpan|nothing">
+        <start tal:content="pm_timeSpan/start"/>
+        <end tal:content="pm_timeSpan/end"/>
+      </TimeSpan>
+
       <atom:author>
         <atom:name tal:content="pm_author/name">NAME</atom:name>
         <atom:uri tal:content="pm_author/uri">URI</atom:uri>

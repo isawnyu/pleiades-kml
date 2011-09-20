@@ -19,10 +19,10 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.dublincore.interfaces import ICMFDublinCore
 from ZTUtils import make_query
 
-from Products.PleiadesEntity.content.interfaces import ILocation
 from pleiades.capgrids import Grid
 from pleiades.geographer.geo import NotLocatedError
-from pleiades.capgrids import Grid
+from Products.PleiadesEntity.content.interfaces import ILocation
+from Products.PleiadesEntity.time import periodRanges, TimePeriodCmp
 
 log = logging.getLogger('pleiades.kml')
 
@@ -87,6 +87,16 @@ class PleiadesPlacemark(Placemark):
     def author(self):
         return {'name': self.context.Creator(), 'uri': self.alternate_link}
 
+    @property
+    def timeSpan(self):
+        try:
+            trange = self.context.temporalRange()
+            if trange:
+                return {'start': int(trange[0]), 'end': int(trange[1])}
+            else:
+                return None
+        except AttributeError:
+            return None
 
 class PleiadesBrainPlacemark(BrainPlacemark):
     
@@ -142,6 +152,28 @@ class PleiadesBrainPlacemark(BrainPlacemark):
     def alternate_link(self):
         return self.context.getURL()
 
+    @memoize
+    def periodRanges(self):
+        vocab = getToolByName(
+            self.context.getObject(), 'portal_vocabularies'
+            ).getVocabularyByName('time-periods').getTarget()
+        return periodRanges(vocab)
+
+    @property
+    def timeSpan(self):
+        catalog = self.context.aq_parent
+        vocab = getToolByName(
+            catalog, 'portal_vocabularies'
+            ).getVocabularyByName('time-periods').getTarget()
+        ranges = periodRanges(vocab)
+        years = []
+        for tp in getattr(self.context, 'getTimePeriods', []):
+            if tp:
+                years.extend(list(ranges[tp]))
+        if len(years) >= 2:
+            return {'start': int(min(years)), 'end': int(max(years))}
+        else:
+            return None
 
 class PlaceFolder(Folder):
 

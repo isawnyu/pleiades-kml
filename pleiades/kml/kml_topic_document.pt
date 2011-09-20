@@ -35,6 +35,7 @@
               pm_tags pm/tags;
               pm_ftypes pm/featureTypes;
               pm_tperiods pm/timePeriods;
+              pm_timeSpan pm/timeSpan;
               styleName request/form/style | string:core;
               pm_styleUrl string:#${styleName}Style;"
       >
