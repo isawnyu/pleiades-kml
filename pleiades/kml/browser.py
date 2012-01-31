@@ -243,6 +243,10 @@ class PlaceNeighborhoodDocument(PlaceDocument):
     def p_neighbors_kml(self):
         return "%s/p-neighbors-kml" % self.context.absolute_url().rstrip('/')
 
+    @property
+    def connections_kml(self):
+        return "%s/connections-kml" % self.context.absolute_url().rstrip('/')
+
 
 class PlaceNeighborsDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_neighbors_document.pt')
@@ -466,6 +470,23 @@ class PleiadesSearchDocument(PleiadesTopicDocument):
         self.context = context
         self.request = request
         self.dc = SearchDCProvider()
+
+
+class ConnectionsDocument(PlaceDocument):
+    implements(IContainer)
+    template = ViewPageTemplateFile('kml_connections_document.pt')
+    disposition_tmpl = "%s-connections.kml"
+
+    @property
+    def filename(self):
+        return self.disposition_tmpl % self.context.getId()
+    
+    @property
+    def features(self):
+        for item in self.context.getBRefs('connectsWith'):
+            yield PleiadesPlacemark(item, self.request)
+        for item in self.context.getRefs('connectsWith'):
+            yield PleiadesPlacemark(item, self.request)
 
 
 class IKMLNeighborhood(Interface):

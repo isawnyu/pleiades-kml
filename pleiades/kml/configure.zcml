@@ -72,6 +72,13 @@
 
   <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"
+    name="connections-kml"
+    class=".browser.ConnectionsDocument"
+    permission="zope2.View"
+    />
+
+  <browser:page
+    for="Products.PleiadesEntity.content.interfaces.IPlace"
     name="r-neighbors-kml"
     class=".browser.PlaceRoughNeighborsDocument"
     permission="zope2.View"

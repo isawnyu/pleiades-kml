@@ -1,5 +1,9 @@
 Changelog for pleiades.kml
 
+0.11 (2012-01-31)
+-----------------
+- Add a connections view and network link it into the neighborhood view.
+
 0.9 (2011-04-19)
 ----------------
 - Refactored templates, style and placemark macros with description slots.

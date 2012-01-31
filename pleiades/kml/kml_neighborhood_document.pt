@@ -37,6 +37,16 @@
       </Link>
     </NetworkLink>
 
+    <!-- Connected places -->
+    <NetworkLink>
+      <name>Connected places</name>
+      <description>Explicitly connected places</description>
+      <visibility>1</visibility>
+      <Link>
+        <href tal:content="view/connections_kml">HREF</href>
+      </Link>
+    </NetworkLink>
+
     <!-- Primary place -->
     <NetworkLink>
       <name>The primary place</name>
