@@ -416,8 +416,8 @@ class PleiadesTopicDocument(TopicDocument):
             get_rough = True
         else:
             qv = self.request.form.get('query', precision_param)
-            get_precise = 'precise' in qv
-            get_rough = 'rough' in qv
+            get_precise = 'precise' in qv or 'precise' in qv.get('query')
+            get_rough = 'rough' in qv or 'rough' in qv.get('query')
         request = self.request.form.copy()
         if get_precise:
             request['location_precision'] = ['precise']
@@ -494,6 +494,7 @@ class IKMLNeighborhood(Interface):
         """Query string to search for precisely located neighbors"""
     def r_link():
         """Query string to search for aggregations of roughly located neighbors"""
+
 
 class KMLNeighborhood(BrowserView):
     implements(IKMLNeighborhood)
