@@ -1,5 +1,5 @@
 import logging
-from shapely.geometry import asShape
+from shapely.geometry import asShape, mapping
 
 from plone.memoize.instance import memoize
 from Products.CMFCore.utils import getToolByName
@@ -35,9 +35,17 @@ def coords_to_kml(geom):
             return (to_string(geom['coordinates'][0]), None)
         elif len(geom['coordinates']) > 1:
             return (
-                to_string(geom['coordinates'][0]), to_string(geom['coordinates'][1]))
+                to_string(geom['coordinates'][0]), 
+                to_string(geom['coordinates'][1]))
     else:
         return to_string(geom['coordinates'])
+
+def to_ad(year):
+    sign = (year>0)*2-1
+    if sign >= 0:
+        return "AD %d" % year
+    else:
+        return "%d BC" % (sign*year)
 
 
 class W(object):
@@ -62,6 +70,11 @@ class GridPlacemark(Placemark):
 class PleiadesPlacemark(Placemark):
 
     @property
+    def kid(self):
+        path = self.context.getPhysicalPath()[2:]
+        return "/".join(path)
+
+    @property
     def timePeriods(self):
         return ", ".join(
             x.capitalize() for x in self.context.getTimePeriods()) or "Unattested"
@@ -72,12 +85,22 @@ class PleiadesPlacemark(Placemark):
             x.capitalize() for x in self.context.getFeatureType()) or "Unattested"
 
     @property
+    def appellations(self):
+        return ", ".join(
+            unicode(o.getNameAttested(), 'utf-8') for o in self.context.getNames()
+            ) or "Unnamed"
+
+    @property
     def tags(self):
         return ", ".join(self.context.Subject()) or "None"
             
     @property
     def snippet(self):
-        return "%s; %s" % (self.featureTypes, self.timePeriods)
+        sdata = [self.featureTypes]
+        timespan = self.timeSpanAD
+        if timespan:
+            sdata += ["%(start)s - %(end)s" % timespan]
+        return "; ".join(sdata)
 
     @property
     def description(self):
@@ -98,8 +121,21 @@ class PleiadesPlacemark(Placemark):
         except AttributeError:
             return None
 
+    @property
+    def timeSpanAD(self):
+        span = self.timeSpan
+        if span:
+            return dict([(k, to_ad(v)) for k, v in span.items()])
+        else:
+            return None
+
+
 class PleiadesBrainPlacemark(BrainPlacemark):
-    
+
+    @property
+    def kid(self):
+        return self.context.getPath().replace("/plone/", "")
+
     @property
     def timePeriods(self):
         tp = getattr(self.context, 'getTimePeriods', [])
@@ -129,12 +165,25 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         return retval or "Unattested"
 
     @property
+    def appellations(self):
+        catalog = self.context.aq_parent
+        import pdb; pdb.set_trace()
+        brains = catalog(
+            portal_type='Name', 
+            path={'query': self.context.getPath(), 'depth': 1})
+        return ", ".join(unicode(b.getNameAttested, 'utf-8') for b in brains)
+
+    @property
     def tags(self):
         return ", ".join(self.context.Subject) or "None"
 
     @property
     def snippet(self):
-        return "%s; %s" % (self.featureTypes, self.timePeriods)
+        sdata = [self.featureTypes]
+        timespan = self.timeSpanAD
+        if timespan:
+            sdata += ["%(start)s - %(end)s" % timespan]
+        return "; ".join(sdata)
 
     @property
     def description(self):
@@ -175,8 +224,23 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         else:
             return None
 
+    @property
+    def timeSpanAD(self):
+        span = self.timeSpan
+        if span:
+            return dict([(k, to_ad(v)) for k, v in span.items()])
+        else:
+            return None
+
+
 class PlaceFolder(Folder):
 
+    @property
+    def kid(self):
+        # Note: presumes we don't want site object in the path
+        path = self.context.getPhysicalPath()[2:]
+        return "/".join(path)
+        
     @property
     def timePeriods(self):
         return ", ".join(
@@ -190,12 +254,22 @@ class PlaceFolder(Folder):
             ) or "Unattested"
 
     @property
+    def appellations(self):
+        return ", ".join(
+            unicode(o.getNameAttested(), 'utf-8') for o in self.context.getNames()
+            ) or "Unnamed"
+    
+    @property
     def tags(self):
         return ", ".join(self.context.Subject()) or "None"
 
     @property
     def snippet(self):
-        return "%s; %s" % (self.featureTypes, self.timePeriods)
+        sdata = [self.featureTypes]
+        timespan = self.timeSpanAD
+        if timespan:
+            sdata += ["%(start)s - %(end)s" % timespan]
+        return "; ".join(sdata)
 
     @property
     def description(self):
@@ -208,11 +282,35 @@ class PlaceFolder(Folder):
         for item in self.context.getFeatures():
             yield PleiadesPlacemark(item, self.request)
 
+    @property
+    def timeSpan(self):
+        try:
+            trange = self.context.temporalRange()
+            if trange:
+                return {'start': int(trange[0]), 'end': int(trange[1])}
+            else:
+                return None
+        except AttributeError:
+            return None
+
+    @property
+    def timeSpanAD(self):
+        span = self.timeSpan
+        if span:
+            return dict([(k, to_ad(v)) for k, v in span.items()])
+        else:
+            return None
+
 
 class PlaceDocument(Document):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_document.pt')
     disposition_tmpl = "%s.kml"
+
+
+    @property
+    def name(self):
+        return "Locations of %s" % self.dc.Title()
 
     @property
     def filename(self):
@@ -230,6 +328,10 @@ class PlaceDocument(Document):
 class PlaceNeighborhoodDocument(PlaceDocument):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_neighborhood_document.pt')
+
+    @property
+    def name(self):
+        return "Neighborhood of %s" % self.dc.Title()
 
     @property
     def kml(self):
@@ -304,6 +406,10 @@ class AggregationPlacemark:
         self.objects = objects
 
     @property
+    def kid(self):
+        return repr(self.geom)
+
+    @property
     def id(self):
         return repr(self.geom)
 
@@ -349,6 +455,11 @@ class AggregationPlacemark:
     @property
     def coords_kml(self):
         return coords_to_kml(self.geom)
+
+    @property
+    def reprpt_kml(self):
+        return coords_to_kml(
+            mapping(asShape(self.geom).representative_point()))
 
 
 class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
@@ -406,6 +517,10 @@ class PleiadesDocument(Document):
 class PleiadesTopicDocument(TopicDocument):
     template = ViewPageTemplateFile('kml_topic_document.pt')
     filename = "collection.kml"
+
+    @property
+    def name(self):
+        return "Places collected in %s" % self.dc.Title()
 
     @property
     def features(self, skip=None):
@@ -471,11 +586,25 @@ class PleiadesSearchDocument(PleiadesTopicDocument):
         self.request = request
         self.dc = SearchDCProvider()
 
+    @property
+    def name(self):
+        return "Results of %s" % self.dc.Title()
+
+    @property
+    def alternate_link(self):
+        portal_url = getToolByName(self.context, 'portal_url')()
+        import pdb; pdb.set_trace()
+        return "%s/search?%s" % (portal_url, make_query(self.request.form))
+
 
 class ConnectionsDocument(PlaceDocument):
     implements(IContainer)
     template = ViewPageTemplateFile('kml_connections_document.pt')
     disposition_tmpl = "%s-connections.kml"
+
+    @property
+    def name(self):
+        return "Places connected with %s" % self.dc.Title()
 
     @property
     def filename(self):

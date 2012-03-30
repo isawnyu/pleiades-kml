@@ -1,5 +1,9 @@
 Changelog for pleiades.kml
 
+0.12 (2012-03-23)
+-----------------
+- Simplified balloon description and complete macro-ization of styles.
+
 0.11.1 (2012-01-31)
 -------------------
 - Get precision parameters that could appear in the request in two different

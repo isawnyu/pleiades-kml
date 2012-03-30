@@ -19,22 +19,44 @@
 
   <metal:s metal:fill-slot="document_contents">
 
-  <Folder tal:repeat="folder view/features">
+  <Folder id="" tal:repeat="folder view/features"
+    tal:attributes="id folder/kid">
     <name tal:content="folder/name">TITLE</name>
+    <atom:link tal:attributes="href view/alternate_link"/>
+    <address tal:content="view/alternate_link"/>
+    <open>1</open>
+    <visibility>1</visibility>
     <Snippet tal:content="folder/snippet">SNIPPET</Snippet>
-    <description>
-      <span tal:replace="structure string:&lt;![CDATA[" />
-        <p><em tal:content="folder/description">ITEM DESCRIPTION</em></p>
-        <ul><!-- Attributes -->
-        <li>Tags: <span tal:content="folder/tags">TAGS</span></li>
-        <li>Feature types: 
-            <span tal:content="folder/featureTypes">TYPE</span></li>
-        <li>Time periods: 
-            <span tal:content="folder/timePeriods">PERIOD</span></li>
-        </ul>
+
+    <description tal:define="features folder/features|nothing">
+    <span tal:replace="structure string:&lt;![CDATA[" />
+      <p><em tal:content="folder/description">ITEM DESCRIPTION</em></p>
+      <ul tal:define="timespan folder/timeSpanAD"><!-- Attributes -->
+      <li>In context: <a href="" type=""
+          tal:attributes="href string:${folder/alternate_link};"
+          tal:content="view/name">CONTEXT</a></li>
+      <li tal:condition="folder/appellations"
+        >Names: <span tal:content="folder/appellations">NAMES</span></li>
+      <li tal:condition="features"
+        >Locations: <span tal:repeat="pm python:list(features)[:1]">
+        <a href="" type="" tal:content="pm/name" 
+          tal:attributes="href string:#${pm/kid};;balloonFlyto;
+                          type string:application/vnd.google-earth.kml+xml"
+                          >NAME</a>
+        </span> <span tal:repeat="pm python:list(features)[1:]">, 
+        <a href="" type="" tal:content="pm/name" 
+          tal:attributes="href string:#${pm/kid};;balloonFlyto;
+                          type string:application/vnd.google-earth.kml+xml"
+                          >NAME</a>
+        </span></li>
+      <li>Categories: <span tal:content="folder/featureTypes">TYPES</span></li>
+      <li tal:condition="timespan" 
+        tal:content="string:${timespan/start} - ${timespan/end}">TIMES</li>
+      </ul>
       <span tal:replace="structure string:]]&gt;" />
     </description>
-    <styleUrl>#coreStyle</styleUrl>
+
+    <styleUrl>#style-core-normal0</styleUrl>
 
   <tal:placemarks tal:repeat="pm folder/features">
 
@@ -47,8 +69,8 @@
               pm_tags pm/tags;
               pm_ftypes pm/featureTypes;
               pm_tperiods pm/timePeriods;
-              pm_timeSpan pm/timeSpan;
-              pm_styleUrl string:#coreStyle;"
+              styleName request/form/style | string:core;
+              pm_timeSpan pm/timeSpan;"
       >
       <metal:m metal:use-macro="kml_macros/placemark">
       <metal:s metal:fill-slot="placemark_content">
@@ -56,10 +78,16 @@
         <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
-          <ul><!-- Attributes -->
-          <li>Tags: <span tal:content="pm_tags">TAGS</span></li>
-          <li>Feature types: <span tal:content="pm_ftypes">TYPES</span></li>
-          <li>Time periods: <span tal:content="pm_tperiods">PERIODS</span></li>
+          <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
+          <li>In context: <a href="" type=""
+              tal:attributes="href string:${folder/alternate_link};"
+              tal:content="view/name">CONTEXT</a></li>
+          <li>Categories: <span tal:content="pm_ftypes">TYPES</span></li>
+          <li tal:condition="timespan" 
+            tal:content="string:${timespan/start} - ${timespan/end}">TIMES</li>
+          <li><a href="" type=""
+            tal:attributes="href string:#${folder/kid};;balloonFlyto"
+            >Fly to parent place</a></li>
           </ul>
           <p tal:condition="python:path('pm/geom/precision|nothing') == 'rough'">
           <em>This object is within or partially overlaps the placemark shown.</em>

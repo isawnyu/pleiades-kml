@@ -10,135 +10,18 @@
 
   <Document>
 
-    <metal:macro metal:define-macro="core_style">
-    
-    <Style id="coreStyle">
-      <IconStyle>
-        <scale>0.8</scale>
-        <Icon>
-          <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
-        </Icon>
-      </IconStyle>
-      <LineStyle>
-        <color>ffff0000</color>
-        <width>2</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>33ff0000</color>
-      </PolyStyle>
-      <BalloonStyle>
-        <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <div><table cellspacing="5">
-            <tr>
-              <td><a href="http://pleiades.stoa.org"><img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/></a></td>
-              <td class="text-align: top">
-              <h1 style="color: #333; font-family: Verdana, sans-serif">$[name]</h1>
-              <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">$[address]</a></p>
-              </td>
-            </tr>
-          </table></div>
-          <div style="color: #333; margin-left: 1em">
-            $[description]
-            <p>
-              <a style="color: #2575AD; text-decoration: underline" href="$[address]">Details</a> 
-              (<a style="color: #2575AD; text-decoration: underline" href="$[address]/edit">Edit</a>)
-            </p>
-          </div>
-        <span tal:replace="structure string:]]&gt;"/></text>
-      </BalloonStyle>
-    </Style>
-    
-    </metal:macro>
-
-    <metal:macro metal:define-macro="peripheral_style">
-    
-    <Style id="peripheralStyle">
-      <IconStyle>
-        <scale>0.8</scale>
-        <Icon>
-          <href>http://atlantides.org/images/justice-brown.png</href>
-        </Icon>
-      </IconStyle>
-      <LineStyle>
-        <color>ff3366cc</color>
-        <width>2</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>333366cc</color>
-      </PolyStyle>
-      <BalloonStyle>
-        <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <div><table cellspacing="5">
-            <tr>
-              <td><a href="http://pleiades.stoa.org">
-              <img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/>
-              </a></td>
-              <td class="text-align: top">
-              <h3 style="color: #333; font-family: Verdana, sans-serif">$[name]</h3>
-              </td>
-            </tr>
-          </table></div>
-          <div style="color: #333; margin-left: 1em">
-            $[description]
-            <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">Permalink</a></p>
-          </div>
-        <span tal:replace="structure string:]]&gt;"/></text>
-      </BalloonStyle>
-    </Style>
-    
-    </metal:macro>
-
-    <metal:macro metal:define-macro="connection_style">
-    
-    <Style id="connectionStyle">
-      <IconStyle>
-        <scale>0.8</scale>
-        <Icon>
-          <href>http://atlantides.org/images/justice-green.png</href>
-        </Icon>
-      </IconStyle>
-      <LineStyle>
-        <color>ff00ff00</color>
-        <width>2</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>3300ff00</color>
-      </PolyStyle>
-      <BalloonStyle>
-        <text><span tal:replace="structure string:&lt;![CDATA[" />
-          <div><table cellspacing="5">
-            <tr>
-              <td><a href="http://pleiades.stoa.org"><img src="http://atlantides.org/images/pleiades-kml-logo-sm.png"/></a></td>
-              <td class="text-align: top">
-              <h1 style="color: #333; font-family: Verdana, sans-serif">$[name]</h1>
-              <p><a href="$[address]" style="color: #2575AD; text-decoration: underline">$[address]</a></p>
-              </td>
-            </tr>
-          </table></div>
-          <div style="color: #333; margin-left: 1em">
-            $[description]
-            <p>
-              <a style="color: #2575AD; text-decoration: underline" href="$[address]">Details</a> 
-              (<a style="color: #2575AD; text-decoration: underline" href="$[address]/edit">Edit</a>)
-            </p>
-          </div>
-        <span tal:replace="structure string:]]&gt;"/></text>
-      </BalloonStyle>
-    </Style>
-    
-    </metal:macro>
-
+    <!-- The placemark macro. Style macros follow. -->
     <metal:macro metal:define-macro="placemark">
 
-    <Placemark>
+    <Placemark id="" tal:attributes="id pm/kid">
       <name tal:content="pm_name">NAME</name>
       <atom:link tal:attributes="href pm_alternate_link"/>
       <address tal:content="pm_alternate_link"/>
 
-      <TimeSpan tal:condition="pm_timeSpan|nothing">
+      <!--TimeSpan tal:condition="pm_timeSpan|nothing">
         <start tal:content="pm_timeSpan/start"/>
         <end tal:content="pm_timeSpan/end"/>
-      </TimeSpan>
+      </TimeSpan-->
 
       <atom:author>
         <atom:name tal:content="pm_author/name">NAME</atom:name>
@@ -151,7 +34,10 @@
         <!-- For the popup bubble -->
       </metal:slot>
 
-      <styleUrl tal:content="pm_styleUrl">STYLE_URL</styleUrl>
+      <styleUrl 
+        tal:content="python:pm.hasPoint*(
+            '#style-%s-0'%styleName)  or '#style-%s-1'%styleName"
+        >STYLE_URL</styleUrl>
 
       <Point tal:condition="pm/hasPoint">
         <coordinates tal:content="pm/coords_kml">
@@ -159,24 +45,187 @@
         </coordinates>
       </Point>
 
-      <LineString tal:condition="pm/hasLineString">
-        <coordinates tal:content="pm/coords_kml">
-          COORDINATE LIST
-        </coordinates>
-      </LineString>
-      
-      <Polygon tal:condition="pm/hasPolygon">
-        <outerBoundaryIs>
-          <LinearRing>
-            <coordinates tal:content="python:pm.coords_kml[0]">
-              COORDINATE LIST
-            </coordinates>
-          </LinearRing>
-        </outerBoundaryIs>
-      </Polygon>
-    </Placemark>
+      <MultiGeometry tal:condition="pm/hasLineString">
+        <Point>
+          <coordinates tal:content="pm/reprpt_kml">
+            COORDINATE LIST
+          </coordinates>
+        </Point>
+        <LineString>
+          <coordinates tal:content="pm/coords_kml">
+            COORDINATE LIST
+          </coordinates>
+        </LineString>
+      </MultiGeometry>
 
+      <MultiGeometry tal:condition="pm/hasPolygon">
+        <Point>
+          <coordinates tal:content="pm/reprpt_kml">
+            COORDINATE LIST
+          </coordinates>
+        </Point>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates tal:content="python:pm.coords_kml[0]">
+                COORDINATE LIST
+              </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </MultiGeometry>
+
+    </Placemark>
     </metal:macro>
+
+    <!-- The blue core styles macro -->
+    <metal:macro metal:define-macro="core_style">
+    <tal:defs
+      define="icon_href string:http://google-maps-icons.googlecode.com/files/justice.png;
+              stroke_color string:ff0000;
+              fill_color string:ff0000;
+              style_name string:core">
+    <metal:block metal:use-macro="here/kml_macros/macros/pleiades_stylemap"/>
+    </tal:defs>
+    </metal:macro>
+
+    <!-- The brown peripheral styles macro -->
+    <metal:macro metal:define-macro="peripheral_style">
+    <tal:defs
+      define="icon_href string:http://atlantides.org/images/justice-brown.png;
+              stroke_color string:3366cc;
+              fill_color string:3366cc;
+              style_name string:peripheral">
+    <metal:block metal:use-macro="here/kml_macros/macros/pleiades_stylemap"/>
+    </tal:defs>
+    </metal:macro>
+
+    <!-- The green connections styles macro -->
+    <metal:macro metal:define-macro="connection_style">
+    <tal:defs
+      define="icon_href string:http://atlantides.org/images/justice-green.png;
+              stroke_color string:00ff00;
+              fill_color string:00ff00;
+              style_name string:connection">
+    <metal:block metal:use-macro="here/kml_macros/macros/pleiades_stylemap"/>
+    </tal:defs>
+    </metal:macro>
+
+    <!-- The Pleiades stylemap macro -->
+    <metal:macro metal:define-macro="pleiades_stylemap">
+    <Style id="style-normal0" 
+      tal:attributes="id string:style-${style_name}-normal0">
+      <IconStyle>
+        <scale>0.8</scale>
+        <Icon>
+          <href tal:content="icon_href">
+            http://google-maps-icons.googlecode.com/files/justice.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle metal:use-macro="here/kml_macros/macros/balloon_style"/>
+    </Style>
+    <Style id="style-highlight0"
+      tal:attributes="id string:style-${style_name}-highlight0">
+      <IconStyle>
+        <scale>1.2</scale>
+        <Icon>
+          <href tal:content="icon_href">
+            http://google-maps-icons.googlecode.com/files/justice.png</href>
+        </Icon>
+      </IconStyle>
+      <BalloonStyle metal:use-macro="here/kml_macros/macros/balloon_style"/>
+    </Style>
+    <Style id="style-normal1"
+      tal:attributes="id string:style-${style_name}-normal1">
+      <IconStyle>
+        <scale>0</scale>
+      </IconStyle>
+      <LineStyle>
+        <color tal:content="string:ff${stroke_color}">99ff0000</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color tal:content="string:00${fill_color}">00ff0000</color>
+      </PolyStyle>
+      <BalloonStyle metal:use-macro="here/kml_macros/macros/balloon_style"/>
+    </Style>
+    <Style id="style-highlight1"
+      tal:attributes="id string:style-${style_name}-highlight1">
+      <IconStyle>
+        <scale>0</scale>
+      </IconStyle>
+      <LineStyle>
+        <color tal:content="string:ff${stroke_color}">ccff0000</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color tal:content="string:11${fill_color}">22ff0000</color>
+      </PolyStyle>
+      <BalloonStyle metal:use-macro="here/kml_macros/macros/balloon_style"/>
+    </Style>
+    <StyleMap id="style-0" tal:attributes="id string:style-${style_name}-0">
+      <Pair>
+        <key>normal</key>
+        <styleUrl tal:content="string:#style-${style_name}-normal0"
+          >#style-normal0</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl tal:content="string:#style-${style_name}-highlight0"
+          >#style-highlight0</styleUrl>
+      </Pair>
+    </StyleMap>
+    <StyleMap id="style-1" tal:attributes="id string:style-${style_name}-1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl tal:content="string:#style-${style_name}-normal1"
+          >#style-normal1</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl tal:content="string:#style-${style_name}-highlight1"
+          >#style-highlight1</styleUrl>
+      </Pair>
+    </StyleMap>
+    </metal:macro>
+
+    <!-- The popup balloon macro -->
+    <Style id="baseStyle">
+    <metal:macro metal:define-macro="balloon_style">
+      <BalloonStyle>
+        <text><span tal:replace="structure string:&lt;![CDATA[" />
+          <html><head>
+          <style type="text/css">
+          body {
+            font-family:'Helvetica Neue',serif;
+            font-size:1.2em;
+            color:#444;
+            width:auto; }
+          h1, h2, h3, h4 {
+            font-family:Verdana,sans-serif;
+            color:#2575AD; }
+          a { 
+            color:#2575AD;
+            text-decoration:underline; }
+          ul {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 1em;
+            text-indent: -0.5em; }
+          </style>
+          </head><body>
+          <h1>$[name]</h1>
+          <p><a href="$[address]" 
+              style="font-family:Verdana,sans-serif;
+              color: #2575AD; 
+              text-decoration: underline"
+              >$[address]</a></p>
+          <p style="color: #333; margin-left: 1em">$[description]</p>
+          </body></html>
+        <span tal:replace="structure string:]]&gt;"/></text>
+      </BalloonStyle>
+    </metal:macro>
+    </Style>
 
   </Document>
 </kml>

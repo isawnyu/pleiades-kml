@@ -34,19 +34,22 @@
               pm_tags pm/tags;
               pm_ftypes pm/featureTypes;
               pm_tperiods pm/timePeriods;
-              pm_timeSpan pm/timeSpan;
-              pm_styleUrl string:#peripheralStyle;"
+              styleName request/form/style | string:peripheral;
+              pm_timeSpan pm/timeSpan;"
       >
       <metal:m metal:use-macro="kml_macros/placemark">
       <metal:s metal:fill-slot="placemark_content">
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
-          <ul><!-- Attributes -->
-          <li>Tags: <span tal:content="pm_tags">TAGS</span></li>
-          <li>Feature types: <span tal:content="pm_ftypes">TYPES</span></li>
-          <li>Time periods: <span tal:content="pm_tperiods">PERIODS</span></li>
-          </ul>
+          <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
+          <li>In context: <a href="" type=""
+              tal:attributes="href string:${view/alternate_link};"
+              tal:content="view/name">CONTEXT</a></li>
+          <li>Names: <span tal:content="pm/appellations">NAMES</span></li>
+          <li>Categories: <span tal:content="pm_ftypes">TYPES</span></li>
+          <li tal:condition="timespan" 
+              tal:content="string:${timespan/start} - ${timespan/end}">TIMES</li>              </ul>
         <span tal:replace="structure string:]]&gt;" />
       </description>
       </metal:s>
@@ -63,7 +66,7 @@
               pm_author pm/author;
               pm_snippet pm/snippet;
               pm_description pm/description;
-              pm_styleUrl string:#peripheralStyle;
+              styleName request/form/style | string:peripheral;
               objects pm/objects;
               numObjects python:len(objects)"
       >
@@ -75,14 +78,15 @@
             <p>This <span tal:content="pm_description">DESCR</span>
             contains <span tal:content="numObjects">N</span>
             imprecisely located place(s): </p>
-            <ul>
+            <ul tal:condition="objects">
               <li tal:repeat="obj objects">
               <a
-                style="color: #2575AD; text-decoration: underline"
                 tal:attributes="href obj/alternate_link" 
                 tal:content="obj/name"
                 >ITEM URL
-              </a> <em>(<span tal:content="obj/featureTypes">TYPES</span>; <span tal:content="obj/timePeriods">PERIODS</span>)</em>: <span tal:content="obj/altLocation|nothing">Alt Location</span>
+              </a> <em>(<span 
+                tal:content="string:${obj/snippet}">PERIODS</span>)</em>: 
+                <span tal:content="obj/altLocation|nothing">Alt Location</span>
               </li>
             </ul>
           </div>
