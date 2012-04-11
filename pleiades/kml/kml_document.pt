@@ -32,6 +32,7 @@
     <span tal:replace="structure string:&lt;![CDATA[" />
       <p><em tal:content="folder/description">ITEM DESCRIPTION</em></p>
       <ul tal:define="timespan folder/timeSpanAD"><!-- Attributes -->
+      <li>ID: <span tal:content="folder/context/getId">PID</span></li>
       <li>In context: <a href="" type=""
           tal:attributes="href string:${folder/alternate_link};"
           tal:content="view/name">CONTEXT</a></li>
@@ -49,9 +50,6 @@
                           type string:application/vnd.google-earth.kml+xml"
                           >NAME</a>
         </span></li>
-      <li>Categories: <span tal:content="folder/featureTypes">TYPES</span></li>
-      <li tal:condition="timespan" 
-        tal:content="string:${timespan/start} - ${timespan/end}">TIMES</li>
       </ul>
       <span tal:replace="structure string:]]&gt;" />
     </description>
@@ -79,12 +77,11 @@
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
           <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
+          <li>ID: <span 
+            tal:content="string:${view/context/getId}/${pm/context/getId}">PID</span></li>
           <li>In context: <a href="" type=""
               tal:attributes="href string:${folder/alternate_link};"
               tal:content="view/name">CONTEXT</a></li>
-          <li>Categories: <span tal:content="pm_ftypes">TYPES</span></li>
-          <li tal:condition="timespan" 
-            tal:content="string:${timespan/start} - ${timespan/end}">TIMES</li>
           <li><a href="" type=""
             tal:attributes="href string:#${folder/kid};;balloonFlyto"
             >Fly to parent place</a></li>

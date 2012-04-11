@@ -43,13 +43,12 @@
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
           <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
+          <li>ID: <span tal:content="pm/context/getId">PID</span></li>
           <li>In context: <a href="" type=""
               tal:attributes="href string:${view/alternate_link};"
               tal:content="view/name">CONTEXT</a></li>
           <li>Names: <span tal:content="pm/appellations">NAMES</span></li>
-          <li>Categories: <span tal:content="pm_ftypes">TYPES</span></li>
-          <li tal:condition="timespan" 
-              tal:content="string:${timespan/start} - ${timespan/end}">TIMES</li>              </ul>
+          </ul>
         <span tal:replace="structure string:]]&gt;" />
       </description>
       </metal:s>

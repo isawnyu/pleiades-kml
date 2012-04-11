@@ -218,13 +218,7 @@
           <p><a href="$[address]" 
               style="font-family:Verdana,sans-serif;
               color: #2575AD; 
-              text-decoration: underline"
-              ><span 
-                tal:condition="nocall:view/criteria|nothing" 
-                tal:replace="string:$$[Snippet]"
-                >LABEL</span><span 
-                  tal:condition="not:nocall:view/criteria|nothing" 
-                  tal:replace="string:$$[address]">LABEL</span></a></p>
+              text-decoration: underline">$[Snippet]</a></p>
           <p style="color: #333; margin-left: 1em">$[description]</p>
           </body></html>
         <span tal:replace="structure string:]]&gt;"/></text>
