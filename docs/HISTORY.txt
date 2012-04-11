@@ -1,5 +1,9 @@
 Changelog for pleiades.kml
 
+0.12.1 (2012-04-11)
+-------------------
+- Remove pdb traces, use Snippet for address label in search aggregations.
+
 0.12 (2012-03-23)
 -----------------
 - Simplified balloon description and complete macro-ization of styles.

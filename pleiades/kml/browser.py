@@ -167,7 +167,6 @@ class PleiadesBrainPlacemark(BrainPlacemark):
     @property
     def appellations(self):
         catalog = self.context.aq_parent
-        import pdb; pdb.set_trace()
         brains = catalog(
             portal_type='Name', 
             path={'query': self.context.getPath(), 'depth': 1})
@@ -593,7 +592,6 @@ class PleiadesSearchDocument(PleiadesTopicDocument):
     @property
     def alternate_link(self):
         portal_url = getToolByName(self.context, 'portal_url')()
-        import pdb; pdb.set_trace()
         return "%s/search?%s" % (portal_url, make_query(self.request.form))
 
 
@@ -630,7 +628,7 @@ class KMLNeighborhood(BrowserView):
 
     @memoize
     def geo(self):
-        log.info("Getting georeferencing")
+        log.debug("Getting georeferencing")
         try:
             g = IGeoreferenced(self.context)
         except NotLocatedError:
@@ -657,7 +655,7 @@ class KMLNeighborhood(BrowserView):
         return u
 
     def p_link(self):
-        log.info("Getting p_qs query string")
+        log.debug("Getting p_qs query string")
         g = self.geo()
         if g is None:
             return None
@@ -675,7 +673,7 @@ class KMLNeighborhood(BrowserView):
             self.context.getId())
 
     def r_link(self):
-        log.info("Getting r_qs query string")
+        log.debug("Getting r_qs query string")
         g = self.geo()
         if g is None:
             return None
