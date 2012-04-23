@@ -530,8 +530,10 @@ class PleiadesTopicDocument(TopicDocument):
             get_rough = True
         else:
             qv = self.request.form.get('query', precision_param)
-            get_precise = 'precise' in qv or 'precise' in qv.get('query')
-            get_rough = 'rough' in qv or 'rough' in qv.get('query')
+            get_precise = 'precise' in qv or (
+                hasattr(qv, 'get') and 'precise' in qv.get('query'))
+            get_rough = 'rough' in qv or (
+                hasattr(qv, 'get') and 'rough' in qv.get('query'))
         request = self.request.form.copy()
         if get_precise:
             request['location_precision'] = ['precise']
