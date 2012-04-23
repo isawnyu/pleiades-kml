@@ -3,6 +3,7 @@ Changelog for pleiades.kml
 0.12.2 (2012-04-23)
 -------------------
 - Ensure that query is a dict before trying to get a value.
+- Fix macro paths so that dump script will run again.
 
 0.12.1 (2012-04-11)
 -------------------

@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.12.1'
+version = '0.12.2'
 
 setup(name='pleiades.kml',
       version=version,

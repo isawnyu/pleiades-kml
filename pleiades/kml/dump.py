@@ -38,7 +38,11 @@ class AllPlacesDocument:
         self.dc = SearchDCProvider()
         self.filename = "all.kml"
         self.name = "Pleiades KML"
-    
+
+    @property
+    def alternate_link(self):
+        return "http://pleiades.stoa.org/places"
+
     @property
     def features(self):
         catalog = getToolByName(self.context, 'portal_catalog')
