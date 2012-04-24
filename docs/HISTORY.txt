@@ -1,5 +1,10 @@
 Changelog for pleiades.kml
 
+0.12.3 (2012-04-24)
+-------------------
+- Harmonize representation of aggregated roughly located places in topic
+  and neighborhood KML.
+
 0.12.2 (2012-04-23)
 -------------------
 - Ensure that query is a dict before trying to get a value.

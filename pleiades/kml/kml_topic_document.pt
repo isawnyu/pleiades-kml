@@ -75,19 +75,18 @@
       <description>
         <span tal:replace="structure string:&lt;![CDATA[" />
           <div>
-            <ul><li>In context: <a href="" type=""
-            tal:attributes="href string:${view/alternate_link};"
-            tal:content="view/name">CONTEXT</a></li></ul>
             <p>This <span tal:content="pm_description">DESCR</span>
             contains <span tal:content="numObjects">N</span>
             imprecisely located place(s): </p>
-            <ul>
+            <ul tal:condition="objects">
               <li tal:repeat="obj objects">
               <a
                 tal:attributes="href obj/alternate_link" 
                 tal:content="obj/name"
                 >ITEM URL
-              </a> <em>(<span tal:content="obj/featureTypes">TYPES</span>; <span tal:content="obj/timePeriods">PERIODS</span>)</em>: <span tal:content="obj/altLocation|nothing">Alt Location</span>
+              </a> <em>(<span 
+                tal:content="string:${obj/snippet}">PERIODS</span>)</em>: 
+                <span tal:content="obj/altLocation|nothing">Alt Location</span>
               </li>
             </ul>
           </div>
