@@ -22,7 +22,7 @@ from ZTUtils import make_query
 from pleiades.capgrids import Grid
 from pleiades.geographer.geo import NotLocatedError
 from Products.PleiadesEntity.content.interfaces import ILocation
-from Products.PleiadesEntity.time import periodRanges, TimePeriodCmp
+from Products.PleiadesEntity.time import periodRanges, TimePeriodCmp, to_ad
 
 log = logging.getLogger('pleiades.kml')
 
@@ -39,14 +39,6 @@ def coords_to_kml(geom):
                 to_string(geom['coordinates'][1]))
     else:
         return to_string(geom['coordinates'])
-
-def to_ad(year):
-    sign = (year>0)*2-1
-    if sign >= 0:
-        return "AD %d" % year
-    else:
-        return "%d BC" % (sign*year)
-
 
 class W(object):
     # spatial 'within' wrapper for use as a sorting key
@@ -81,8 +73,8 @@ class PleiadesPlacemark(Placemark):
 
     @property
     def featureTypes(self):
-        return ", ".join(
-            x.capitalize() for x in self.context.getFeatureType()) or "Unattested"
+        return ", ".join(x.capitalize() for x in (
+            self.context.getFeatureType() or ["unknown"]))
 
     @property
     def appellations(self):
@@ -162,7 +154,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         except TypeError, e:
             log.warn("Feature type formatting error: %s", str(e))
             retval = None
-        return retval or "Unattested"
+        return retval or "Unknown"
 
     @property
     def appellations(self):
@@ -248,9 +240,8 @@ class PlaceFolder(Folder):
 
     @property
     def featureTypes(self):
-        return ", ".join(
-            x.capitalize() for x in self.context.getFeatureType()
-            ) or "Unattested"
+        return ", ".join(x.capitalize() for x in (
+            self.context.getFeatureType() or ["unknown"]))
 
     @property
     def appellations(self):

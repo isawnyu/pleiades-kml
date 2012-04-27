@@ -1,5 +1,10 @@
 Changelog for pleiades.kml
 
+0.13 (2012-04-26)
+-----------------
+- Move to_ad() function to Products.PleiadesEntity.time module.
+- Return "unknown" from featureTypes if nothing is defined.
+
 0.12.3 (2012-04-24)
 -------------------
 - Harmonize representation of aggregated roughly located places in topic
