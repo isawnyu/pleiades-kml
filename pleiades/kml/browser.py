@@ -207,9 +207,14 @@ class PleiadesBrainPlacemark(BrainPlacemark):
             ).getVocabularyByName('time-periods').getTarget()
         ranges = periodRanges(vocab)
         years = []
-        for tp in getattr(self.context, 'getTimePeriods', []):
-            if tp:
-                years.extend(list(ranges[tp]))
+        tp = getattr(self.context, 'getTimePeriods', [])
+        if callable(tp):
+            values = tp()
+        else:
+            values = tp
+        for val in values:
+            if val:
+                years.extend(list(ranges[val]))
         if len(years) >= 2:
             return {'start': int(min(years)), 'end': int(max(years))}
         else:
@@ -380,9 +385,11 @@ class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
 
     def criteria(self, g):
         return dict(
-           where={'query': (g.bounds, 20000.0), 'range': 'distance' }, 
+            where={'query': (g.bounds, 15), 'range': 'nearest' }, 
+            # where={'query': (g.bounds, 20000.0), 'range': 'distance' }, 
             portal_type={'query': ['Place']},
-            location_precision={'query': ['precise']}
+            location_precision={'query': ['precise']},
+
             )
 
 
