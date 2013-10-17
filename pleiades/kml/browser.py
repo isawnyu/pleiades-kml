@@ -162,7 +162,8 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         brains = catalog(
             portal_type='Name', 
             path={'query': self.context.getPath(), 'depth': 1})
-        return ", ".join(unicode(b.getNameAttested, 'utf-8') for b in brains)
+        return ", ".join(
+            [unicode(b.getNameAttested, 'utf-8') for b in brains])
 
     @property
     def tags(self):
@@ -213,7 +214,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         else:
             values = tp
         for val in values:
-            if val:
+            if val and val in ranges:
                 years.extend(list(ranges[val]))
         if len(years) >= 2:
             return {'start': int(min(years)), 'end': int(max(years))}
