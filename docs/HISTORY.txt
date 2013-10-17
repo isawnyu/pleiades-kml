@@ -1,13 +1,9 @@
 Changelog for pleiades.kml
 
-0.13.3 (future)
+0.13.2 (future)
 ---------------
 - Marshal only true valued attested names into appellations (#1).
 - Avoid key errors when time periods are malformed (#1).
-
-0.13.2 (?)
-----------
-- TODO: identify changes.
 
 0.13.1 (2012-06-29)
 -------------------
