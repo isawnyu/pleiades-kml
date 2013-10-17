@@ -163,7 +163,8 @@ class PleiadesBrainPlacemark(BrainPlacemark):
             portal_type='Name', 
             path={'query': self.context.getPath(), 'depth': 1})
         return ", ".join(
-            [unicode(b.getNameAttested, 'utf-8') for b in brains])
+            unicode(b.getNameAttested, 'utf-8') 
+            for b in brains if b.getNameAttested)
 
     @property
     def tags(self):
