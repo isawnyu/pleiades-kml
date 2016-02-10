@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml
+  xmlns="http://www.opengis.net/kml/2.2"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="plone"
+  tal:define="kml_macros context/@@kml_macros/macros"
+  >
+
+  <metal:m metal:use-macro="context/@@kml_template/macros/doc">
+  
+  <Document>
+
+  <metal:s metal:fill-slot="document_styles">
+    <metal:m metal:use-macro="kml_macros/connection_style"/>
+  </metal:s>
+
+  <metal:s metal:fill-slot="document_contents">
+
+  <tal:placemarks tal:repeat="pm view/features">
+  <tal:pm_defs
+    define="pm_name pm/name;
+            pm_alternate_link pm/alternate_link;
+            pm_author pm/author;
+            pm_snippet pm/snippet;
+            pm_description pm/description;
+            pm_tags pm/tags;
+            pm_ftypes pm/featureTypes;
+            pm_tperiods pm/timePeriods;
+            styleName request/form/style | string:connection;
+            pm_timeSpan pm/timeSpan;"
+    >
+    <metal:m metal:use-macro="kml_macros/placemark">
+    <metal:s metal:fill-slot="placemark_content">
+    <description>
+      <span tal:replace="structure string:&lt;![CDATA[" />
+        <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
+        <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
+        <li>ID: <span tal:content="pm/context/getId">PID</span></li>
+        <li>In context: <a href="" type=""
+            tal:attributes="href string:${view/alternate_link}"
+            tal:content="view/name">CONTEXT</a></li>
+        <li>Names: <span tal:content="pm/appellations">NAMES</span></li>
+        </ul>
+      <span tal:replace="structure string:]]&gt;" />
+    </description>
+    </metal:s>
+    </metal:m>
+  </tal:pm_defs>
+  </tal:placemarks>
+
+  </metal:s>
+
+  </Document>
+
+  </metal:m>
+
+</kml>
