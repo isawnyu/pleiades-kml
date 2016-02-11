@@ -1,15 +1,14 @@
-import unittest
-
-from pleiades.kml.tests.base import PleiadesKMLTestCase
-from pleiades.kml.browser import PleiadesPlacemark, PlaceFolder
+from collective.geo.geographer.interfaces import IGeoreferenced
 from pleiades.kml.browser import PlaceDocument, PlaceNeighborsDocument
-from zgeo.geographer.interfaces import IGeoreferenced
-from zope.publisher.browser import TestRequest
+from pleiades.kml.browser import PleiadesPlacemark, PlaceFolder
+from pleiades.kml.tests.base import PleiadesKMLTestCase
 from zope.interface import implements
+from zope.publisher.browser import TestRequest
 import zope.dublincore
 
+
 class AdaptPlaceTestCase(PleiadesKMLTestCase):
-    
+
     def test_place(self):
         class MockPlace:
             implements(zope.dublincore.interfaces.ICMFDublinCore)
@@ -24,8 +23,9 @@ class AdaptPlaceTestCase(PleiadesKMLTestCase):
         self.assertEqual(p.description, "A place")
         self.assertEqual(p.timePeriods, 'Archaic, Classical')
 
+
 class AdaptPlaceFolderTestCase(PleiadesKMLTestCase):
-    
+
     def test_place_folder(self):
         class MockPlace:
             implements(zope.dublincore.interfaces.ICMFDublinCore)
@@ -42,6 +42,7 @@ class AdaptPlaceFolderTestCase(PleiadesKMLTestCase):
         request = TestRequest()
         p = PlaceFolder(MockPlace(), request)
         self.assertEqual(len(list(p.features)), 1)
+
 
 class PlaceDocumentTestCase(PleiadesKMLTestCase):
 
@@ -94,13 +95,3 @@ class PlaceNeighborsDocumentTestCase(PleiadesKMLTestCase):
         p = PlaceNeighborsDocument(m, request)
         self.assertEqual(p.name, "All neighbors of Foo")
         self.assertEqual(len(list(p.features)), 0)
-        
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(AdaptPlaceTestCase))
-    suite.addTest(unittest.makeSuite(AdaptPlaceFolderTestCase))
-    suite.addTest(unittest.makeSuite(PlaceDocumentTestCase))
-    suite.addTest(unittest.makeSuite(PlaceNeighborsDocumentTestCase))
-    return suite

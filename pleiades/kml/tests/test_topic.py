@@ -1,12 +1,10 @@
-import unittest
-
 from pleiades.kml.tests.base import PleiadesKMLTestCase
 from pleiades.kml.browser import PleiadesBrainPlacemark
 from zope.publisher.browser import TestRequest
 
 
 class AdaptBrainsTestCase(PleiadesKMLTestCase):
-    
+
     def test_brain(self):
         class Mock(object):
             Title = 'Thing'
@@ -24,9 +22,3 @@ class AdaptBrainsTestCase(PleiadesKMLTestCase):
         self.assertEqual(bool(p.hasPoint), True)
         self.assertEqual(p.coords_kml, '-1.000000,1.000000,0.0')
         self.assertEqual(p.timePeriods, 'Roman, Late-antique')
-        
-        
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(AdaptBrainsTestCase))
-    return suite

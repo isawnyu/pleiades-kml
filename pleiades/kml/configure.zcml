@@ -4,8 +4,6 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="pleiades.kml">
 
-  <include package="zgeo.plone.kml"/>
-
   <five:implements
     class="Products.PleiadesEntity.content.Location.Location"
     interface="zope.dublincore.interfaces.ICMFDublinCore"

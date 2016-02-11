@@ -1,30 +1,20 @@
-import logging
-from shapely.geometry import asShape, mapping
-
+from pleiades.geographer.geo import NotLocatedError
 from plone.memoize.instance import memoize
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-
-from zgeo.kml.browser import Document, Folder, Placemark, to_string
-from zgeo.kml.interfaces import IFeature, IPlacemark, IContainer
-from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
+from Products.PleiadesEntity.time import periodRanges, to_ad
+from shapely.geometry import asShape, mapping
 from zgeo.geographer.interfaces import IGeoreferenced
-
-from zope.component import adapts
-from zope.publisher.interfaces import browser
-from zope.contentprovider.interfaces import IContentProvider
-from zope.interface import Attribute, implements, Interface
+from zgeo.kml.browser import Folder, Placemark, to_string
+from zgeo.kml.interfaces import IContainer
+from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
+from zope.interface import implements, Interface
 from zope.publisher.browser import BrowserView
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-from zope.dublincore.interfaces import ICMFDublinCore
 from ZTUtils import make_query
-
-from pleiades.capgrids import Grid
-from pleiades.geographer.geo import NotLocatedError
-from Products.PleiadesEntity.content.interfaces import ILocation
-from Products.PleiadesEntity.time import periodRanges, TimePeriodCmp, to_ad
+import logging
 
 log = logging.getLogger('pleiades.kml')
+
 
 def coords_to_kml(geom):
     gtype = geom['type']
@@ -35,25 +25,27 @@ def coords_to_kml(geom):
             return (to_string(geom['coordinates'][0]), None)
         elif len(geom['coordinates']) > 1:
             return (
-                to_string(geom['coordinates'][0]), 
+                to_string(geom['coordinates'][0]),
                 to_string(geom['coordinates'][1]))
     else:
         return to_string(geom['coordinates'])
+
 
 class W(object):
     # spatial 'within' wrapper for use as a sorting key
     def __init__(self, o):
         self.o = o
+
     def __lt__(self, other):
         return asShape(self.o.geom).within(asShape(other.o.geom))
 
 
 class GridPlacemark(Placemark):
-    
+
     @property
     def id(self):
         return self.context.id
-    
+
     @property
     def alternate_link(self):
         return self.context.id
@@ -69,7 +61,8 @@ class PleiadesPlacemark(Placemark):
     @property
     def timePeriods(self):
         return ", ".join(
-            x.capitalize() for x in self.context.getTimePeriods()) or "Unattested"
+            x.capitalize()
+            for x in self.context.getTimePeriods()) or "Unattested"
 
     @property
     def featureTypes(self):
@@ -79,13 +72,14 @@ class PleiadesPlacemark(Placemark):
     @property
     def appellations(self):
         return ", ".join(
-            unicode(o.getNameAttested(), 'utf-8') for o in self.context.getNames()
+            unicode(o.getNameAttested(), 'utf-8')
+            for o in self.context.getNames()
             ) or "Unnamed"
 
     @property
     def tags(self):
         return ", ".join(self.context.Subject()) or "None"
-            
+
     @property
     def snippet(self):
         sdata = [self.featureTypes]
@@ -137,7 +131,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
             values = tp
         try:
             retval = ", ".join(v.capitalize() for v in values) or None
-        except TypeError, e:
+        except TypeError as e:
             log.warn("Time period formatting error: %s", str(e))
             retval = None
         return retval or "Unattested"
@@ -151,7 +145,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
             values = ft
         try:
             retval = ", ".join(v.capitalize() for v in values) or None
-        except TypeError, e:
+        except TypeError as e:
             log.warn("Feature type formatting error: %s", str(e))
             retval = None
         return retval or "Unknown"
@@ -160,9 +154,12 @@ class PleiadesBrainPlacemark(BrainPlacemark):
     def appellations(self):
         catalog = self.context.aq_parent
         brains = catalog(
-            portal_type='Name', 
+            portal_type='Name',
             path={'query': self.context.getPath(), 'depth': 1})
-        return ", ".join(unicode(b.getNameAttested, 'utf-8') for b in brains)
+        return ", ".join(
+            unicode(b.getNameAttested, 'utf-8')
+            for b in brains
+        )
 
     @property
     def tags(self):
@@ -186,7 +183,10 @@ class PleiadesBrainPlacemark(BrainPlacemark):
 
     @property
     def altLocation(self):
-        return self.context.getModernLocation or self.context.Description.lstrip('An ancient place, cited: ')
+        return (
+            self.context.getModernLocation or
+            self.context.Description.lstrip('An ancient place, cited: ')
+        )
 
     @property
     def alternate_link(self):
@@ -236,7 +236,7 @@ class PlaceFolder(Folder):
         # Note: presumes we don't want site object in the path
         path = self.context.getPhysicalPath()[2:]
         return "/".join(path)
-        
+
     @property
     def timePeriods(self):
         return ", ".join(
@@ -251,9 +251,10 @@ class PlaceFolder(Folder):
     @property
     def appellations(self):
         return ", ".join(
-            unicode(o.getNameAttested(), 'utf-8') for o in self.context.getNames()
+            unicode(o.getNameAttested(), 'utf-8')
+            for o in self.context.getNames()
             ) or "Unnamed"
-    
+
     @property
     def tags(self):
         return ", ".join(self.context.Subject()) or "None"
@@ -302,7 +303,6 @@ class PlaceDocument(Document):
     template = ViewPageTemplateFile('kml_document.pt')
     disposition_tmpl = "%s.kml"
 
-
     @property
     def name(self):
         return "Locations of %s" % self.dc.Title()
@@ -310,7 +310,7 @@ class PlaceDocument(Document):
     @property
     def filename(self):
         return self.disposition_tmpl % self.context.getId()
-    
+
     @property
     def features(self):
         return iter([PlaceFolder(self.context, self.request)])
@@ -358,9 +358,12 @@ class PlaceNeighborsDocument(TopicDocument):
 
     def criteria(self, g):
         return dict(
-            where={'query': (g.bounds, 10), 'range': 'nearest' }, 
+            where={
+                'query': (g.bounds, 10),
+                'range': 'nearest'
+            },
             portal_type={'query': ['Place']}
-            )
+        )
 
     @property
     def features(self):
@@ -385,17 +388,15 @@ class PlacePreciseNeighborsDocument(PlaceNeighborsDocument):
 
     def criteria(self, g):
         return dict(
-            where={'query': (g.bounds, 15), 'range': 'nearest' }, 
-            # where={'query': (g.bounds, 20000.0), 'range': 'distance' }, 
+            where={'query': (g.bounds, 15), 'range': 'nearest'},
             portal_type={'query': ['Place']},
             location_precision={'query': ['precise']},
-
-            )
+        )
 
 
 class AggregationPlacemark:
     """A placemark for a location that is related to roughly located objects"""
-    
+
     def __init__(self, context, geom, objects):
         # Objects here are catalog brains - metadata
         self.context = context
@@ -468,10 +469,10 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
 
     def criteria(self, g):
         return dict(
-            where={'query': g.bounds, 'range': 'intersection' }, 
+            where={'query': g.bounds, 'range': 'intersection'},
             portal_type={'query': ['Place']},
             location_precision={'query': ['rough']}
-            )
+        )
 
     @property
     def features(self):
@@ -489,10 +490,10 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
                 continue
             item = PleiadesBrainPlacemark(brain, self.request)
             geo = brain.zgeo_geometry
-            if geo and geo.has_key('type') and geo.has_key('coordinates'):
+            if geo and 'type' in geo and 'coordinates' in geo:
                 # key = (geo['type'], geo['coordinates'])
                 key = repr(geo)
-                if not key in geoms:
+                if key not in geoms:
                     geoms[key] = geo
                 if key in objects:
                     objects[key].append(item)
@@ -500,9 +501,10 @@ class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
                     objects[key] = [item]
         placemarks = sorted(
             [AggregationPlacemark(
-                self.context, geoms[key], val) for key, val in objects.items()],
-                key=W,
-                reverse=False)
+                self.context, geoms[k], v) for k, v in objects.items()],
+            key=W,
+            reverse=False
+        )
         for placemark in placemarks:
             yield placemark
 
@@ -548,9 +550,9 @@ class PleiadesTopicDocument(TopicDocument):
                     continue
                 item = PleiadesBrainPlacemark(brain, self.request)
                 geo = brain.zgeo_geometry
-                if geo and geo.has_key('type') and geo.has_key('coordinates'):
+                if geo and 'type' in geo and 'coordinates' in geo:
                     key = repr(geo)
-                    if not key in geoms:
+                    if key not in geoms:
                         geoms[key] = geo
                     if key in objects:
                         objects[key].append(item)
@@ -558,20 +560,24 @@ class PleiadesTopicDocument(TopicDocument):
                         objects[key] = [item]
             placemarks = sorted(
                 [AggregationPlacemark(
-                    self.context, 
-                    geoms[key], 
-                    val) for key, val in objects.items()],
+                    self.context,
+                    geoms[k],
+                    v) for k, v in objects.items()],
                 key=W,
-                reverse=False)
+                reverse=False,
+            )
             for placemark in placemarks:
                 yield placemark
 
 
 class SearchDCProvider:
+
     def Title(self):
         return "Search"
+
     def Description(self):
         return "Advanced search for content"
+
     def Creator(self):
         return ""
 
@@ -607,7 +613,7 @@ class ConnectionsDocument(PlaceDocument):
     @property
     def filename(self):
         return self.disposition_tmpl % self.context.getId()
-    
+
     @property
     def features(self):
         for item in self.context.getBRefs('connectsWith'):
@@ -617,8 +623,10 @@ class ConnectionsDocument(PlaceDocument):
 
 
 class IKMLNeighborhood(Interface):
+
     def p_link():
         """Query string to search for precisely located neighbors"""
+
     def r_link():
         """Query string to search for aggregations of roughly located neighbors"""
 
@@ -668,7 +676,7 @@ class KMLNeighborhood(BrowserView):
             type="application/vnd.google-earth.kml+xml"
             href="%s/search_kml?%s&skipId:list=%s&style=peripheral"/>
         """ % (
-            getToolByName(self.context, 'portal_url')(), 
+            getToolByName(self.context, 'portal_url')(),
             make_query(query),
             self.context.getId())
 
@@ -686,7 +694,6 @@ class KMLNeighborhood(BrowserView):
             type="application/vnd.google-earth.kml+xml"
             href="%s/search_kml?%s&skipId:list=%s&style=peripheral&"/>
         """ % (
-            getToolByName(self.context, 'portal_url')(), 
+            getToolByName(self.context, 'portal_url')(),
             make_query(query),
             self.context.getId())
-
