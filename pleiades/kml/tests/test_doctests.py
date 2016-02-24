@@ -12,10 +12,15 @@ def test_suite():
     return unittest.TestSuite([
 
         ztc.FunctionalDocFileSuite(
-            'places.txt', package='pleiades.kml.tests',
+            'kml-docs.txt', package='pleiades.kml.tests',
             test_class=PleiadesKMLFunctionalTestCase,
-            optionflags=optionflags
         ),
+
+        # ztc.FunctionalDocFileSuite(
+        #     'places.txt', package='pleiades.kml.tests',
+        #     test_class=PleiadesKMLFunctionalTestCase,
+        #     optionflags=optionflags
+        # ),
 
         ztc.FunctionalDocFileSuite(
             'place.txt', package='pleiades.kml.tests',

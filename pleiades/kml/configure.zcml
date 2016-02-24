@@ -4,6 +4,18 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="pleiades.kml">
 
+  <include package="pleiades.geographer" />
+
+  <five:implements
+    class="Products.ATContentTypes.content.base.ATCTMixin"
+    interface="zope.dublincore.interfaces.ICMFDublinCore"
+    />
+
+  <five:implements
+    class="Products.ATContentTypes.content.topic.ATTopic"
+    interface="zope.dublincore.interfaces.ICMFDublinCore"
+    />
+
   <five:implements
     class="Products.PleiadesEntity.content.Location.Location"
     interface="zope.dublincore.interfaces.ICMFDublinCore"
@@ -20,17 +32,63 @@
     />
 
   <adapter
-    factory="zgeo.kml.browser.Placemark"
+    factory=".browser.Folder"
+    for="zope.container.interfaces.IContainer"
+    provides=".interfaces.IFeature"
+    />
+
+  <adapter
+    factory=".browser.Placemark"
+    for="zope.container.interfaces.IContained"
+    provides=".interfaces.IFeature"
+    />
+
+  <adapter
+    factory=".browser.Placemark"
+    for="Products.ATContentTypes.content.base.BaseContent
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    provides=".interfaces.IFeature"
+    />
+
+  <adapter
+    factory=".browser.Folder"
+    for="Products.ATContentTypes.content.folder.ATFolder
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    provides=".interfaces.IFeature"
+    />
+
+  <adapter
+    factory=".browser.Placemark"
     for="Products.PleiadesEntity.content.interfaces.IFeature
          zope.publisher.interfaces.browser.IBrowserRequest"
-    provides="zgeo.kml.interfaces.IFeature"
+    provides=".interfaces.IFeature"
     />
 
   <adapter
     factory=".browser.PlaceFolder"
     for="Products.PleiadesEntity.content.interfaces.IPlace
          zope.publisher.interfaces.browser.IBrowserRequest"
-    provides="zgeo.kml.interfaces.IFeature"
+    provides=".interfaces.IFeature"
+    />
+
+  <browser:page
+    for="*"
+    name="kml-document"
+    class=".browser.Document"
+    permission="zope2.View"
+    />
+
+  <adapter
+    factory=".browser.document_template"
+    for=".browser.Document"
+    name="template-kml-document"
+    />
+
+  <browser:page
+    for="Products.ATContentTypes.content.topic.ATTopic"
+    name="kml-document"
+    class=".browser.TopicDocument"
+    permission="zope2.View"
     />
 
   <browser:page
@@ -60,13 +118,6 @@
     class=".browser.PlaceNeighborhoodDocument"
     permission="zope2.View"
     />
-
-  <!--browser:page
-    for="Products.PleiadesEntity.content.interfaces.IPlace"
-    name="neighbors-kml"
-    class=".browser.PlaceNeighborsDocument"
-    permission="zope2.View"
-    /-->
 
   <browser:page
     for="Products.PleiadesEntity.content.interfaces.IPlace"

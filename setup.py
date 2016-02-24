@@ -25,7 +25,6 @@ setup(name='pleiades.kml',
       zip_safe=False,
       install_requires=[
           'pleiades.geographer',
-          'zgeo.plone.kml'
           ],
       tests_require=[
           'pleiades.workspace'

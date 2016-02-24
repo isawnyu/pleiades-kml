@@ -1,0 +1,131 @@
+
+Set up geo-referenced content in a folder.
+
+    >>> self.setRoles(('Manager',))
+    >>> folder = self.folder
+    >>> folder.setTitle('Test Places')
+    >>> oid = self.folder.invokeFactory('Document', 'doc', title='A Document', description='A test document')
+    >>> doc = self.folder[oid]
+    >>> from collective.geo.geographer.interfaces import IGeoreferenceable
+    >>> from zope.interface import alsoProvides
+    >>> alsoProvides(doc, IGeoreferenceable)
+    >>> from collective.geo.geographer.interfaces import IWriteGeoreferenced
+    >>> geo = IWriteGeoreferenced(doc)
+    >>> geo.setGeoInterface('Point', (-105, 40))
+
+Test the KML document view of the places folder
+
+    >>> from Products.PloneTestCase.setup import portal_owner, default_password
+    >>> print http(r"""
+    ... GET /plone/Members/test_user_1_/@@kml-document HTTP/1.1
+    ... Authorization: Basic %s:%s
+    ... """ % (portal_owner, default_password), handle_errors=False)
+    HTTP/1.1 200 OK
+    Content-Length: 930
+    Content-Type: application/vnd.google-earth.kml+xml;charset=utf-8
+    X-Frame-Options: SAMEORIGIN
+    <BLANKLINE>
+    <?xml version="1.0" encoding="utf-8"?>
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+    <BLANKLINE>
+      <Document>
+        <Style id="defaultStyle">
+          <LineStyle>
+            <color>ffff0000</color>
+            <width>2</width>
+          </LineStyle>
+          <PolyStyle>
+            <color>33ff0000</color>
+          </PolyStyle>
+        </Style>
+        <name>Test Places</name>
+        <visibility>1</visibility>
+        <open>0</open>
+        <Placemark>
+          <name>A Document</name>
+          <description>
+            <![CDATA[
+              <div>
+                <p>A test document</p>
+                <p>URL: 
+                  <a href="http://localhost/plone/Members/test_user_1_/doc">http://localhost/plone/Members/test_user_1_/doc</a>
+                </p>
+              </div>
+            ]]>
+          </description>
+          <styleUrl>#defaultStyle</styleUrl>
+          <Point>
+            <coordinates>-105.000000,40.000000,0.0</coordinates>
+          </Point>
+    <BLANKLINE>
+    <BLANKLINE>
+        </Placemark>
+      </Document>
+    </kml>
+    <BLANKLINE>
+
+
+Add a topic in our folder
+
+    >>> oid = self.folder.invokeFactory('Topic', 'topic', title='Test')
+    >>> topic = self.folder[oid]
+    >>> c = topic.addCriterion('getId', 'ATSimpleStringCriterion')
+    >>> c.setValue('doc')
+
+Check the topic
+
+    >>> brain = [b for b in topic.queryCatalog() if b.id == 'doc'][0]
+    >>> brain.zgeo_geometry['type']
+    'Point'
+    >>> brain.zgeo_geometry['coordinates']
+    (-105, 40)
+
+Test the KML document view of the topic
+
+    >>> r = http(r"""
+    ... GET /plone/Members/test_user_1_/topic/@@kml-document HTTP/1.1
+    ... Authorization: Basic %s:%s
+    ... """ % (portal_owner, default_password), handle_errors=False)
+    >>> r.getStatus()
+    200
+    >>> r.getHeader('Content-Type')
+    'application/vnd.google-earth.kml+xml;charset=utf-8'
+    >>> print r.getBody()
+    <?xml version="1.0" encoding="utf-8"?>
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+    <BLANKLINE>
+      <Document>
+        <Style id="defaultStyle">
+          <LineStyle>
+            <color>ffff0000</color>
+            <width>2</width>
+          </LineStyle>
+          <PolyStyle>
+            <color>33ff0000</color>
+          </PolyStyle>
+        </Style>
+        <name>Test</name>
+        <visibility>1</visibility>
+        <open>0</open>
+        <Placemark>
+          <name>A Document</name>
+          <description>
+            <![CDATA[
+              <div>
+                <p>A test document</p>
+                <p>URL: 
+                  <a href="http://localhost/plone/Members/test_user_1_/doc">http://localhost/plone/Members/test_user_1_/doc</a>
+                </p>
+              </div>
+            ]]>
+          </description>
+          <styleUrl>#defaultStyle</styleUrl>
+          <Point>
+            <coordinates>-105.000000,40.000000,0.0</coordinates>
+          </Point>
+    <BLANKLINE>
+    <BLANKLINE>
+        </Placemark>
+      </Document>
+    </kml>
+    <BLANKLINE>

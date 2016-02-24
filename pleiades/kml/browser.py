@@ -4,31 +4,224 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.PleiadesEntity.time import periodRanges, to_ad
 from shapely.geometry import asShape, mapping
-from zgeo.geographer.interfaces import IGeoreferenced
-from zgeo.kml.browser import Folder, Placemark, to_string
-from zgeo.kml.interfaces import IContainer
-from zgeo.plone.kml.browser import Document, TopicDocument, BrainPlacemark
+from collective.geo.geographer.interfaces import IGeoreferenced
+from zope.component import getMultiAdapter
+from zope.dublincore.interfaces import ICMFDublinCore
+from zope.formlib.namedtemplate import NamedTemplate
+from zope.formlib.namedtemplate import NamedTemplateImplementation
 from zope.interface import implements, Interface
+from zope.publisher.browser import BrowserPage
 from zope.publisher.browser import BrowserView
+from zope.traversing.browser.interfaces import IAbsoluteURL
 from ZTUtils import make_query
+from .interfaces import IContainer
+from .interfaces import IFeature
+from .interfaces import IPlacemark
 import logging
 
 log = logging.getLogger('pleiades.kml')
 
 
-def coords_to_kml(geom):
-    gtype = geom['type']
-    if gtype == 'Point':
-        return to_string((geom['coordinates'],))
-    elif gtype == 'Polygon':
-        if len(geom['coordinates']) == 1:
-            return (to_string(geom['coordinates'][0]), None)
-        elif len(geom['coordinates']) > 1:
-            return (
-                to_string(geom['coordinates'][0]),
-                to_string(geom['coordinates'][1]))
+def to_string(coords):
+    if len(coords[0]) == 2:
+        tuples = ('%f,%f,0.0' % tuple(c) for c in coords)
+    elif len(coords[0]) == 3:
+        tuples = ('%f,%f,%f' % tuple(c) for c in coords)
     else:
-        return to_string(geom['coordinates'])
+        raise ValueError("Invalid dimensions")
+    return ' '.join(tuples)
+
+
+def coords_to_kml(geom):
+    gtype = geom.type
+    if gtype == 'Point':
+        return to_string((geom.coordinates,))
+    elif gtype == 'Polygon':
+        if len(geom.coordinates) == 1:
+            return (to_string(geom.coordinates[0]), None)
+        elif len(geom.coordinates) > 1:
+            return (
+                to_string(geom.coordinates[0]), to_string(geom.coordinates[1]))
+    else:
+        return to_string(geom.coordinates)
+
+
+def absoluteURL(ob, request):
+    return getMultiAdapter((ob, request), IAbsoluteURL)()
+
+
+class NullGeometry(object):
+    type = None
+    coordinates = None
+
+
+class Geometry(object):
+    implements(IGeoreferenced)
+
+    def __init__(self, type, coordinates):
+        self.type = type
+        self.coordinates = coordinates
+
+
+class Feature(BrowserPage):
+
+    """Not to be instantiated.
+    """
+    implements(IFeature)
+
+    @property
+    def id(self):
+        return '%s/@@%s' % (
+            absoluteURL(self.context, self.request), self.__name__)
+
+    @property
+    def name(self):
+        return self.dc.Title()
+
+    @property
+    def description(self):
+        return self.dc.Description()
+
+    @property
+    def author(self):
+        return {
+            'name': self.dc.Creator(),
+            'uri': '',
+            'email': ''
+            }
+
+    @property
+    def alternate_link(self):
+        return absoluteURL(self.context, self.request)
+
+
+class Placemark(Feature):
+    implements(IPlacemark)
+    __name__ = 'kml-placemark'
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.dc = ICMFDublinCore(self.context)
+        try:
+            self.geom = IGeoreferenced(self.context)
+        except:
+            self.geom = NullGeometry()
+
+    @property
+    def hasPoint(self):
+        return int(self.geom.type == 'Point')
+
+    @property
+    def hasLineString(self):
+        return int(self.geom.type == 'LineString')
+
+    @property
+    def hasPolygon(self):
+        return int(self.geom.type == 'Polygon')
+
+    @property
+    def coords_kml(self):
+        return coords_to_kml(self.geom)
+
+    @property
+    def reprpt_kml(self):
+        g = mapping(self.geom)
+        g = g.get('geometry', g)
+        g = asShape(g).representative_point()
+        return to_string(list(g.coords))
+
+    def __call__(self):
+        return self.template().encode('utf-8')
+
+
+class Folder(Feature):
+    implements(IContainer)
+    __name__ = 'kml-folder'
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.dc = ICMFDublinCore(self.context)
+
+    @property
+    def features(self):
+        for item in self.context.values():
+            yield Placemark(item, self.request)
+
+
+class Document(Feature):
+    implements(IContainer)
+    __name__ = 'kml-document'
+    template = NamedTemplate('template-kml-document')
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.dc = ICMFDublinCore(self.context)
+
+    @property
+    def features(self):
+        for item in self.context.values():
+            yield getMultiAdapter((item, self.request), IFeature)
+
+    def __call__(self):
+        return self.template().encode('utf-8')
+
+
+class BrainPlacemark(Placemark):
+    implements(IPlacemark)
+    __name__ = 'kml-placemark'
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        try:
+            g = self.context.zgeo_geometry
+            self.geom = Geometry(g['type'], g['coordinates'])
+        except:
+            self.geom = NullGeometry()
+
+    @property
+    def id(self):
+        return 'urn:uuid:%s' % self.context.UID
+
+    @property
+    def name(self):
+        return self.context.Title
+
+    @property
+    def description(self):
+        return self.context.Description
+
+    @property
+    def author(self):
+        return {
+            'name': self.context.Creator,
+            'uri': '',
+            'email': ''
+            }
+
+    @property
+    def alternate_link(self):
+        return '/'.join(
+            [self.request['BASE1']]
+            + self.request.physicalPathToVirtualPath(self.context.getPath())
+            )
+
+    @property
+    def reprpt_kml(self):
+        g = {'type': self.geom.type, 'coordinates': self.geom.coordinates}
+        g = asShape(g).representative_point()
+        return to_string(list(g.coords))
+
+
+class TopicDocument(Document):
+
+    @property
+    def features(self):
+        for brain in self.context.queryCatalog():
+            yield BrainPlacemark(brain, self.request)
 
 
 class W(object):
@@ -452,12 +645,11 @@ class AggregationPlacemark:
 
     @property
     def coords_kml(self):
-        return coords_to_kml(self.geom)
+        return coords_to_kml(Geometry(self.geom['type'], self.geom['coordinates']))
 
     @property
     def reprpt_kml(self):
-        return coords_to_kml(
-            mapping(asShape(self.geom).representative_point()))
+        return to_string(list(asShape(self.geom).representative_point().coords))
 
 
 class PlaceRoughNeighborsDocument(PlaceNeighborsDocument):
@@ -697,3 +889,8 @@ class KMLNeighborhood(BrowserView):
             getToolByName(self.context, 'portal_url')(),
             make_query(query),
             self.context.getId())
+
+
+document_template = NamedTemplateImplementation(
+    ViewPageTemplateFile('kml_base_document.pt')
+)
