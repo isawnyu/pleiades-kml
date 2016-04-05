@@ -350,7 +350,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
             portal_type='Name',
             path={'query': self.context.getPath(), 'depth': 1})
         return ", ".join(
-            unicode(b.getNameAttested, 'utf-8')
+            unicode(b.getNameAttested or "None", 'utf-8')
             for b in brains
         )
 
