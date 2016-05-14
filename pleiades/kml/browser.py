@@ -1,4 +1,5 @@
 from pleiades.geographer.geo import NotLocatedError
+from pleiades.vocabularies.vocabularies import get_vocabulary
 from plone.memoize.instance import memoize
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -387,17 +388,13 @@ class PleiadesBrainPlacemark(BrainPlacemark):
 
     @memoize
     def periodRanges(self):
-        vocab = getToolByName(
-            self.context.getObject(), 'portal_vocabularies'
-            ).getVocabularyByName('time-periods').getTarget()
+        vocab = get_vocabulary('time_periods')
         return periodRanges(vocab)
 
     @property
     def timeSpan(self):
         catalog = self.context.aq_parent
-        vocab = getToolByName(
-            catalog, 'portal_vocabularies'
-            ).getVocabularyByName('time-periods').getTarget()
+        vocab = get_vocabulary('time_periods')
         ranges = periodRanges(vocab)
         years = []
         tp = getattr(self.context, 'getTimePeriods', [])
