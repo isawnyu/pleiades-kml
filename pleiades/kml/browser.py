@@ -403,7 +403,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
         else:
             values = tp
         for val in values:
-            if val:
+            if val and val in ranges:
                 years.extend(list(ranges[val]))
         if len(years) >= 2:
             return {'start': int(min(years)), 'end': int(max(years))}
