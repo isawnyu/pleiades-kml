@@ -265,7 +265,7 @@ class PleiadesPlacemark(Placemark):
     @property
     def appellations(self):
         return ", ".join(
-            unicode(o.getNameAttested(), 'utf-8')
+            unicode(o.getNameAttested() or o.Title(), 'utf-8')
             for o in self.context.getNames()
             ) or "Unnamed"
 
@@ -350,7 +350,7 @@ class PleiadesBrainPlacemark(BrainPlacemark):
             portal_type='Name',
             path={'query': self.context.getPath(), 'depth': 1})
         return ", ".join(
-            unicode(b.getNameAttested or "None", 'utf-8')
+            unicode(b.getNameAttested or b.Title, 'utf-8')
             for b in brains
         )
 
@@ -444,7 +444,7 @@ class PlaceFolder(Folder):
     @property
     def appellations(self):
         return ", ".join(
-            unicode(o.getNameAttested(), 'utf-8')
+            unicode(o.getNameAttested() or o.Title(), 'utf-8')
             for o in self.context.getNames()
             ) or "Unnamed"
 
