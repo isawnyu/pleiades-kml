@@ -58,6 +58,19 @@
         </LineString>
       </MultiGeometry>
 
+      <MultiGeometry tal:condition="pm/hasMultiLineString">
+        <Point>
+          <coordinates tal:content="pm/reprpt_kml">
+            COORDINATE LIST
+          </coordinates>          
+        </Point>
+        <LineString tal:repeat="coords pm/coords_kml">
+          <coordinates tal:content="coords">
+            COORDINATE LIST
+          </coordinates>
+        </LineString>
+      </MultiGeometry>
+
       <MultiGeometry tal:condition="pm/hasPolygon">
         <Point>
           <coordinates tal:content="pm/reprpt_kml">

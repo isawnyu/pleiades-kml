@@ -51,6 +51,13 @@
             COORDINATE LIST
           </coordinates>
         </LineString>
+        <MultiGeometry tal:condition="placemark/hasMultiLineString">
+          <LineString tal:repeat="coords placemark/coords_kml">
+            <coordinates tal:content="coords">
+              COORDINATE LIST
+            </coordinates>
+          </LineString>
+        </MultiGeometry>
         <Polygon tal:condition="placemark/hasPolygon">
           <outerBoundaryIs>
             <LinearRing>
@@ -89,6 +96,13 @@
           COORDINATE LIST
         </coordinates>
       </LineString>
+      <MultiGeometry tal:condition="feature/hasMultiLineString">
+        <LineString tal:repeat="coords feature/coords_kml">
+          <coordinates tal:content="coords">
+            COORDINATE LIST
+          </coordinates>
+        </LineString>
+      </MultiGeometry>
       <Polygon tal:condition="feature/hasPolygon">
         <outerBoundaryIs>
           <LinearRing>

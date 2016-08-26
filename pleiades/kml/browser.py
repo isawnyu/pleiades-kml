@@ -43,6 +43,8 @@ def coords_to_kml(geom):
         elif len(geom.coordinates) > 1:
             return (
                 to_string(geom.coordinates[0]), to_string(geom.coordinates[1]))
+    elif gtype == 'MultiLineString':
+        return [to_string(linestring) for linestring in geom.coordinates]
     else:
         return to_string(geom.coordinates)
 
@@ -111,15 +113,19 @@ class Placemark(Feature):
 
     @property
     def hasPoint(self):
-        return int(self.geom.type == 'Point')
+        return self.geom.type == 'Point'
 
     @property
     def hasLineString(self):
-        return int(self.geom.type == 'LineString')
+        return self.geom.type == 'LineString'
+
+    @property
+    def hasMultiLineString(self):
+        return self.geom.type == 'MultiLineString'
 
     @property
     def hasPolygon(self):
-        return int(self.geom.type == 'Polygon')
+        return self.geom.type == 'Polygon'
 
     @property
     def coords_kml(self):
