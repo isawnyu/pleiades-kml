@@ -636,15 +636,19 @@ class AggregationPlacemark:
 
     @property
     def hasPoint(self):
-        return int(self.geom['type'] == 'Point')
+        return self.geom['type'] == 'Point'
 
     @property
     def hasLineString(self):
-        return int(self.geom['type'] == 'LineString')
+        return self.geom['type'] == 'LineString'
+
+    @property
+    def hasMultiLineString(self):
+        return self.geom.type == 'MultiLineString'
 
     @property
     def hasPolygon(self):
-        return int(self.geom['type'] == 'Polygon')
+        return self.geom['type'] == 'Polygon'
 
     @property
     def coords_kml(self):
