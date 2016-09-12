@@ -644,7 +644,7 @@ class AggregationPlacemark:
 
     @property
     def hasMultiLineString(self):
-        return self.geom.type == 'MultiLineString'
+        return self.geom['type'] == 'MultiLineString'
 
     @property
     def hasPolygon(self):
