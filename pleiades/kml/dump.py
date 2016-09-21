@@ -16,7 +16,7 @@ class PleiadesDumpPlacemark(PleiadesBrainPlacemark):
 
     @property
     def alternate_link(self):
-        return "http://pleiades.stoa.org/places/%s" % self.context.getId
+        return "https://pleiades.stoa.org/places/%s" % self.context.getId
 
 
 class AggregationDumpPlacemark(AggregationPlacemark):
@@ -28,7 +28,7 @@ class AggregationDumpPlacemark(AggregationPlacemark):
             'path': {'query': [ob.context.getPath() for ob in self.objects],
                      'depth': 0}
             }
-        return "http://pleiades.stoa.org/search?%s" % make_query(query)
+        return "https://pleiades.stoa.org/search?%s" % make_query(query)
 
 
 class AllPlacesDocument:
@@ -41,7 +41,7 @@ class AllPlacesDocument:
 
     @property
     def alternate_link(self):
-        return "http://pleiades.stoa.org/places"
+        return "https://pleiades.stoa.org/places"
 
     @property
     def features(self):
