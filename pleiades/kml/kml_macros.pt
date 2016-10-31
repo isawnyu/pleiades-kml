@@ -94,7 +94,7 @@
     <!-- The blue core styles macro -->
     <metal:macro metal:define-macro="core_style">
     <tal:defs
-      define="icon_href string:http://google-maps-icons.googlecode.com/files/justice.png;
+      define="icon_href string:https://pleiades.stoa.org/map_icons/justice-blue.png;
               stroke_color string:ff0000;
               fill_color string:ff0000;
               style_name string:core">
@@ -105,7 +105,7 @@
     <!-- The brown peripheral styles macro -->
     <metal:macro metal:define-macro="peripheral_style">
     <tal:defs
-      define="icon_href string:http://atlantides.org/images/justice-brown.png;
+      define="icon_href string:https://pleiades.stoa.org/map_icons/justice-brown.png;
               stroke_color string:3366cc;
               fill_color string:3366cc;
               style_name string:peripheral">
@@ -116,7 +116,7 @@
     <!-- The green connections styles macro -->
     <metal:macro metal:define-macro="connection_style">
     <tal:defs
-      define="icon_href string:http://atlantides.org/images/justice-green.png;
+      define="icon_href string:https://pleiades.stoa.org/map_icons/justice-green.png;
               stroke_color string:00ff00;
               fill_color string:00ff00;
               style_name string:connection">
@@ -132,7 +132,7 @@
         <scale>0.8</scale>
         <Icon>
           <href tal:content="icon_href">
-            http://google-maps-icons.googlecode.com/files/justice.png</href>
+            https://pleiades.stoa.org/map_icons/justice-blue.png</href>
         </Icon>
       </IconStyle>
       <BalloonStyle metal:use-macro="kml_macros/balloon_style"/>
@@ -143,7 +143,7 @@
         <scale>1.2</scale>
         <Icon>
           <href tal:content="icon_href">
-            http://google-maps-icons.googlecode.com/files/justice.png</href>
+            https://pleiades.stoa.org/map_icons/justice-blue.png</href>
         </Icon>
       </IconStyle>
       <BalloonStyle metal:use-macro="kml_macros/balloon_style"/>
