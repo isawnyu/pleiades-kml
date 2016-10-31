@@ -20,7 +20,7 @@ Test serialization of Topic to KML
           <IconStyle>
             <scale>0.7</scale>
             <Icon>
-              <href>http://google-maps-icons.googlecode.com/files/justice.png</href>
+              <href>https://pleiades.stoa.org/map_icons/justice-blue.png</href>
             </Icon>
           </IconStyle>
           <LineStyle>
