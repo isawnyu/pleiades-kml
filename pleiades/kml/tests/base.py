@@ -5,7 +5,6 @@ from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import onsetup
 from Testing import ZopeTestCase as ztc
 
-ztc.installProduct('ATVocabularyManager')
 ztc.installProduct('Products.CompoundField')
 ztc.installProduct('Products.ATBackRef')
 ztc.installProduct('PleiadesEntity')
@@ -38,7 +37,6 @@ def setup_pleiades_kml():
 setup_pleiades_kml()
 ptc.setupPloneSite(
     products=[
-        'ATVocabularyManager',
         'Products.CompoundField',
         'Products.ATBackRef',
         'PleiadesEntity',
