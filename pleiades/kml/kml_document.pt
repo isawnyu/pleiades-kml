@@ -55,8 +55,30 @@
       <span tal:replace="structure string:]]&gt;" />
     </description>
 
-    <styleUrl>#style-core-normal0</styleUrl>
-
+  <styleUrl>#style-core-normal0</styleUrl>
+  <Placemark tal:attributes="id kid"
+    tal:define="url string:${context/absolute_url}#representativePointField;
+    kid string:${folder/kid}#representativePointField">
+    <name><tal:name replace="folder/name" />: Calculated Representative Point (Centroid)</name>
+    <atom:link tal:attributes="href url"/>
+    <address tal:content="url"/>
+    <description>
+      <span tal:replace="structure string:&lt;![CDATA[" />
+      <p><em>Calculated Representative Point (Centroid) for <tal:name replace="folder/name" /></em></p>
+      <ul><!-- Attributes -->
+        <li>ID: <span tal:content="kid" /></li>
+        <li>In context: <a tal:attributes="href context/absolute_url" type="">View <tal:name replace="folder/name" /> on the Pleiades website.</a></li>
+        <li><a tal:attributes="href string:#${folder/kid};;balloonFlyto" type="">Zoom out to view all <tal:name replace="folder/name" /> locations.</a></li>
+      </ul>
+      <span tal:replace="structure string:]]&gt;"/>
+    </description>
+    <styleUrl>#style-core-0</styleUrl>
+    <Point tal:define="representative_point_lon_lat context/representative-point;
+    representative_point_list python: representative_point_lon_lat.split(', ');
+    representative_point python: representative_point_list[1] + ', ' + representative_point_list[0]">
+      <coordinates tal:content="representative_point"></coordinates>
+    </Point>
+  </Placemark>
   <tal:placemarks tal:repeat="pm folder/features">
 
     <tal:pm_defs
@@ -98,8 +120,8 @@
       </metal:m>
     </tal:pm_defs>
     </tal:placemarks>
-    </Folder>
-    </metal:s>
+  </Folder>
+  </metal:s>
 
   </Document>
 
