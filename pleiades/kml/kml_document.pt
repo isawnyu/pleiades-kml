@@ -34,8 +34,9 @@
       <ul tal:define="timespan folder/timeSpanAD"><!-- Attributes -->
       <li>ID: <span tal:content="folder/context/getId">PID</span></li>
       <li>In context: <a href="" type=""
-          tal:attributes="href string:${folder/alternate_link};"
-          tal:content="view/name">CONTEXT</a></li>
+          tal:attributes="href string:${folder/alternate_link}">
+          View <tal:description tal:replace="view/name" /> on the Pleiades website
+        </a></li>
       <li tal:condition="folder/appellations"
         >Names: <span tal:content="folder/appellations">NAMES</span></li>
       <li tal:condition="features"
@@ -80,11 +81,12 @@
           <li>ID: <span 
             tal:content="string:${view/context/getId}/${pm/context/getId}">PID</span></li>
           <li>In context: <a href="" type=""
-              tal:attributes="href string:${folder/alternate_link};"
-              tal:content="view/name">CONTEXT</a></li>
+            tal:attributes="href string:${folder/alternate_link}">
+            View <tal:description tal:replace="view/name" /> on the Pleiades website
+          </a></li>
           <li><a href="" type=""
             tal:attributes="href string:#${folder/kid};;balloonFlyto"
-            >Fly to parent place</a></li>
+            >Zoom out to view all <tal:text replace="view/name" />locations</a></li>
           </ul>
           <p tal:condition="python:path('pm/geom/precision|nothing') == 'rough'">
           <em>This object is within or partially overlaps the placemark shown.</em>

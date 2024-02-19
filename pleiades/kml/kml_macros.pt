@@ -14,7 +14,7 @@
     <metal:macro metal:define-macro="placemark">
 
     <Placemark id="" tal:attributes="id pm/kid">
-      <name tal:content="pm_name">NAME</name>
+      <name><tal:name tal:replace="folder/name" />: <tal:name tal:replace="pm_name" /></name>
       <atom:link tal:attributes="href pm_alternate_link"/>
       <address tal:content="pm_alternate_link"/>
 
