@@ -45,8 +45,9 @@
           <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
           <li>ID: <span tal:content="pm/context/getId">PID</span></li>
           <li>In context: <a href="" type=""
-              tal:attributes="href string:${view/alternate_link};"
-              tal:content="view/name">CONTEXT</a></li>
+            tal:attributes="href string:${view/alternate_link};">
+            View <tal:description replace="view/name" /> on the Pleiades website
+          </a></li>
           <li>Names: <span tal:content="pm/appellations">NAMES</span></li>
           </ul>
         <span tal:replace="structure string:]]&gt;" />
