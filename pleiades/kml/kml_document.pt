@@ -10,7 +10,7 @@
   >
 
   <metal:m metal:use-macro="context/@@kml_template/macros/doc">
-  
+
   <Document>
 
   <metal:s metal:fill-slot="document_styles">
@@ -73,9 +73,8 @@
       <span tal:replace="structure string:]]&gt;"/>
     </description>
     <styleUrl>#style-core-0</styleUrl>
-    <Point tal:define="representative_point_lon_lat context/representative-point;
-    representative_point_list python: representative_point_lon_lat.split(', ');
-    representative_point python: representative_point_list[1] + ', ' + representative_point_list[0]">
+    <Point tal:define="representative_point view/representative_point|nothing"
+           tal:condition="representative_point">
       <coordinates tal:content="representative_point"></coordinates>
     </Point>
   </Placemark>

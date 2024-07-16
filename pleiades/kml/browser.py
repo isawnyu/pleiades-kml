@@ -1,4 +1,5 @@
 from pleiades.geographer.geo import NotLocatedError
+from pleiades.geographer.geo import representative_point
 from pleiades.vocabularies.vocabularies import get_vocabulary
 from plone.memoize.instance import memoize
 from Products.CMFCore.utils import getToolByName
@@ -514,6 +515,15 @@ class PlaceDocument(Document):
     @property
     def neighbors_kml(self):
         return "%s/neighbors-kml" % self.context.absolute_url().rstrip('/')
+
+    @property
+    def representative_point(self):
+        repr_pt = representative_point(self.context)
+
+        try:
+            return "{}, {}".format(*repr_pt.get("coords"))
+        except (IndexError, TypeError):
+            return None
 
 
 class PlaceNeighborhoodDocument(PlaceDocument):
