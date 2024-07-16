@@ -41,12 +41,12 @@
         >Names: <span tal:content="folder/appellations">NAMES</span></li>
       <li tal:condition="features"
         >Locations: <span tal:repeat="pm python:list(features)[:1]">
-        <a href="" type="" tal:content="pm/name" 
+        <a href="" type="" tal:content="pm/name"
           tal:attributes="href string:#${pm/kid};;balloonFlyto;
                           type string:application/vnd.google-earth.kml+xml"
                           >NAME</a>
-        </span> <span tal:repeat="pm python:list(features)[1:]">, 
-        <a href="" type="" tal:content="pm/name" 
+        </span> <span tal:repeat="pm python:list(features)[1:]">,
+        <a href="" type="" tal:content="pm/name"
           tal:attributes="href string:#${pm/kid};;balloonFlyto;
                           type string:application/vnd.google-earth.kml+xml"
                           >NAME</a>
@@ -100,7 +100,7 @@
         <span tal:replace="structure string:&lt;![CDATA[" />
           <p><em tal:content="pm_description">ITEM DESCRIPTION</em></p>
           <ul tal:define="timespan pm/timeSpanAD"><!-- Attributes -->
-          <li>ID: <span 
+          <li>ID: <span
             tal:content="string:${view/context/getId}/${pm/context/getId}">PID</span></li>
           <li>In context: <a href="" type=""
             tal:attributes="href string:${folder/alternate_link}">
