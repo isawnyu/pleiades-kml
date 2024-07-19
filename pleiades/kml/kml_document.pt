@@ -81,7 +81,8 @@
   <tal:placemarks tal:repeat="pm folder/features">
 
     <tal:pm_defs
-      define="pm_name pm/name;
+      define="folder_name folder/name;
+              pm_name pm/name;
               pm_alternate_link pm/alternate_link;
               pm_author pm/author;
               pm_snippet pm/snippet;
