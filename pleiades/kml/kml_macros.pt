@@ -14,7 +14,7 @@
     <metal:macro metal:define-macro="placemark">
 
     <Placemark id="" tal:attributes="id pm/kid">
-      <name><tal:name tal:replace="folder/name" />: <tal:name tal:replace="pm_name" /></name>
+      <name><tal:name tal:condition="pm/folder_name|nothing" tal:replace="string:${folder_name}: " /><tal:name tal:replace="pm_name" /></name>
       <atom:link tal:attributes="href pm_alternate_link"/>
       <address tal:content="pm_alternate_link"/>
 
@@ -27,14 +27,14 @@
         <atom:name tal:content="pm_author/name">NAME</atom:name>
         <atom:uri tal:content="pm_author/uri">URI</atom:uri>
       </atom:author>
-      
+
       <Snippet tal:content="pm_snippet">SNIPPET</Snippet>
 
       <metal:slot metal:define-slot="placemark_content">
         <!-- For the popup bubble -->
       </metal:slot>
 
-      <styleUrl 
+      <styleUrl
         tal:content="python:pm.hasPoint*(
             '#style-%s-0'%styleName)  or '#style-%s-1'%styleName"
         >STYLE_URL</styleUrl>
@@ -62,7 +62,7 @@
         <Point>
           <coordinates tal:content="pm/reprpt_kml">
             COORDINATE LIST
-          </coordinates>          
+          </coordinates>
         </Point>
         <LineString tal:repeat="coords pm/coords_kml">
           <coordinates tal:content="coords">
@@ -126,7 +126,7 @@
 
     <!-- The Pleiades stylemap macro -->
     <metal:macro metal:define-macro="pleiades_stylemap">
-    <Style id="style-normal0" 
+    <Style id="style-normal0"
       tal:attributes="id string:style-${style_name}-normal0">
       <IconStyle>
         <scale>0.8</scale>
@@ -217,7 +217,7 @@
           h1, h2, h3, h4 {
             font-family:Verdana,sans-serif;
             color:#2575AD; }
-          a { 
+          a {
             color:#2575AD;
             text-decoration:underline; }
           ul {
@@ -228,9 +228,9 @@
           </style>
           </head><body>
           <h1>$[name]</h1>
-          <p><a href="$[address]" 
+          <p><a href="$[address]"
               style="font-family:Verdana,sans-serif;
-              color: #2575AD; 
+              color: #2575AD;
               text-decoration: underline">$[Snippet]</a></p>
           <p style="color: #333; margin-left: 1em">$[description]</p>
           </body></html>
